@@ -1,0 +1,38 @@
+name: twinned
+description: A new Flutter project.
+version: 0.0.5
+publish_to: 'none'
+
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  open_street_map_search_and_pick: ^0.1.1
+
+  nocode_commons:
+    git:
+      url: https://github.com/boodskap/nocode_commons.git
+
+  twinned_widgets:
+    git:
+      url: https://github.com/boodskap/twinned_widgets.git
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.2
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+
+  

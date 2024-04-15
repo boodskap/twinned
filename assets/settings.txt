@@ -1,0 +1,28 @@
+DEVELOPMENT=false
+DEBUG=true
+
+#Production settings
+
+P_DOMAIN_KEY=PTO3EAEQTHE3Q4U3
+P_HOST_NAME=twinned.digital
+P_MQTT_HOST=twinned.digital
+P_MQTT_TCP_PORT=1883
+P_MQTT_WS_PORT=443
+
+#Development settings
+
+D_DOMAIN_KEY=WBNYC85X2C0PMFYR
+D_HOST_NAME=twinned.boodskap.io
+D_MQTT_HOST=twinned.boodskap.io
+D_MQTT_TCP_PORT=1883
+D_MQTT_WS_PORT=443
+
+#Common Settings
+
+DEFAULT_FONT=Open Sans
+EMIL_SUBJECT=Application
+ACTIVATION_TEMPLATE=twinned_activation
+RESET_PSWD_TEMPLATE=twinned_resetpw
+
+P_PORTAL_LINK=https://pay.boodskap.io/p/login/bIY02IdHc4wC8es8ww
+D_PORTAL_LINK=https://pay.boodskap.io/p/login/test_bIY7tt3zDdQw6w8000
