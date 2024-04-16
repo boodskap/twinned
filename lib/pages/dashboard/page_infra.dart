@@ -96,7 +96,7 @@ class _InfraPageState extends BaseState<InfraPage> {
       if (validateResponse(res)) {
         List<DeviceData> data = [];
         data.addAll(res.body!.values!);
-        setState(() {
+        refresh(sync: () {
           _data.addAll(data);
         });
       }

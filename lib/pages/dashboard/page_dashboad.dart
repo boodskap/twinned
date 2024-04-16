@@ -4,6 +4,7 @@ import 'package:colored_json/colored_json.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nocode_commons/core/base_state.dart';
+import 'package:nocode_commons/widgets/default_deviceview.dart';
 import 'package:nocode_commons/widgets/device_component.dart';
 import 'package:nocode_commons/widgets/device_view.dart';
 import 'package:nocode_commons/core/user_session.dart';
@@ -520,16 +521,11 @@ class _GridViewPageState extends BaseState<GridViewPage>
                     height: double.maxFinite,
                     // color: Colors.red,
                     child: Center(
-                      child: SimpleDeviceView(
+                      child: DefaultDeviceView(
+                        deviceId: data.deviceId,
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
-                        data: data,
-                        liveData: true,
-                        events: BaseState.layoutEvents,
-                        height: 400,
-                        topMenuHeight: 35,
-                        bottomMenuHeight: 35,
-                        onDeviceAnalyticsTapped: () async {
+                        onDeviceAnalyticsTapped: (dd) async {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -537,7 +533,7 @@ class _GridViewPageState extends BaseState<GridViewPage>
                                         data: data,
                                       )));
                         },
-                        onDeviceDoubleTapped: () async {
+                        onDeviceDoubleTapped: (dd) async {
                           await Navigator.push(
                             context,
                             MaterialPageRoute(

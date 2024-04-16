@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/widgets/device_view.dart';
+import 'package:nocode_commons/widgets/default_deviceview.dart';
 import 'package:nocode_commons/core/user_session.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
@@ -72,38 +74,36 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
   }
 
   void _buildCard(twin.DeviceData data, List<Widget> cards) {
-    cards.add(Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: SimpleDeviceView(
-        twinned: UserSession.twin,
-        authToken: UserSession().getAuthToken(),
-        data: data,
-        liveData: true,
-        events: BaseState.layoutEvents,
-        height: 400,
-        topMenuHeight: 35,
-        bottomMenuHeight: 35,
-        showTitle: true,
-        onDeviceAnalyticsTapped: () async {
-          await Navigator.push(
+    cards.add(SizedBox(
+      width: 450,
+      height: 450,
+      child: Card(
+        elevation: 10,
+        child: DefaultDeviceView(
+          deviceId: data.deviceId,
+          twinned: UserSession.twin,
+          authToken: UserSession().getAuthToken(),
+          onDeviceAnalyticsTapped: (dd) async {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DeviceAnalyticsPage(
+                          data: data,
+                        )));
+          },
+          onDeviceDoubleTapped: (dd) {
+            return Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DeviceAnalyticsPage(
-                        data: data,
-                      )));
-        },
-        onDeviceDoubleTapped: () {
-          return Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DeviceHistoryPage(
-                      deviceName: data.deviceName ?? '-',
-                      deviceId: data.deviceId,
-                      modelId: data.modelId,
-                      adminMode: true,
-                    )),
-          );
-        },
+                  builder: (context) => DeviceHistoryPage(
+                        deviceName: data.deviceName ?? '-',
+                        deviceId: data.deviceId,
+                        modelId: data.modelId,
+                        adminMode: true,
+                      )),
+            );
+          },
+        ),
       ),
     ));
   }
@@ -150,15 +150,13 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
             ),
           ],
         ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AlignedGridView.count(
-                crossAxisCount: count,
-                itemCount: _cards.length,
-                itemBuilder: (context, index) {
-                  return _cards[index];
-                }),
+        divider(),
+        Flexible(
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 8.0,
+              children: _cards,
+            ),
           ),
         ),
       ],

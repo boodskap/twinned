@@ -9,6 +9,7 @@ import 'package:nocode_commons/core/constants.dart';
 import 'package:nocode_commons/core/ui.dart';
 import 'package:nocode_commons/core/user_session.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:nocode_commons/widgets/default_deviceview.dart';
 import 'package:nocode_commons/widgets/device_view.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
@@ -520,16 +521,12 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                     height: double.maxFinite,
                     // color: Colors.red,
                     child: Center(
-                      child: SimpleDeviceView(
+                      child: DefaultDeviceView(
+                        deviceId: data.deviceId,
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
-                        data: data,
-                        liveData: false,
-                        height: 400,
-                        topMenuHeight: 35,
-                        bottomMenuHeight: 35,
-                        onDeviceDoubleTapped: null,
-                        onDeviceAnalyticsTapped: () async {
+                        onDeviceDoubleTapped: (dd) async {},
+                        onDeviceAnalyticsTapped: (dd) async {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
