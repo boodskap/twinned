@@ -1,9 +1,9 @@
-
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:nocode_commons/core/base_state.dart';
 import 'package:nocode_commons/core/ui.dart';
 import 'package:nocode_commons/core/user_session.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:twinned/pages/dashboard/page_analytics.dart';
 import 'package:twinned/pages/dashboard/page_dashboad.dart';
 import 'package:twinned/pages/dashboard/page_devices_view.dart';
@@ -49,10 +49,17 @@ class _MyHomePageState extends BaseState<MyHomePage> {
   List<dynamic>? menuData;
   final List<DataFilter> _filters = [];
   final List<Report> _reports = [];
+  String appVersion = '';
+  String appBuildNumber = '';
 
   @override
   void setup() async {
     execute(() async {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        appVersion = packageInfo.version;
+        appBuildNumber = packageInfo.buildNumber;
+      });
       var res = await UserSession.twin.listDataFilters(
           apikey: UserSession().getAuthToken(),
           body: const ListReq(page: 0, size: 10000));
@@ -78,7 +85,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         return InfraPage(
           key: Key(const Uuid().v4()),
           type: TwinInfraType.premise,
-          currentView: CurrentView.asset,
+          currentView: CurrentView.grid,
         );
       case SelectedPage.myDevices:
         return MyDevicesPage(
@@ -507,6 +514,16 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                 onTap: () {
                   UI().logout(context);
                 },
+              ),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  'Boodskap Digital Twin\nVersion:$appVersion\nBuild:$appBuildNumber',
+                  maxLines: 3,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               )
             ],
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nocode_commons/core/base_state.dart';
 import 'package:nocode_commons/core/constants.dart';
 import 'package:nocode_commons/util/nocode_utils.dart';
@@ -866,25 +868,40 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
 
     columns.addAll([
       const DataColumn2(
-        label: Text('Asset'),
+        label: Text(
+          'Asset',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       const DataColumn2(
-        label: Text('Device'),
+        label: Text(
+          'Device',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       const DataColumn2(
-        label: Text('Last Reported'),
+        label: Text(
+          'Last Reported',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       const DataColumn2(
-        label: Text('Location'),
+        label: Text(
+          'Location',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       DataColumn2(
-          label: const Center(child: Text('Sensor Data')),
-          size: ColumnSize.L,
+          label: const Center(
+              child: Text(
+            'Sensor Data',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          )),
           fixedWidth: MediaQuery.of(context).size.width / 2),
     ]);
 
     for (var dd in _data) {
-      var dt = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
+      var dT = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
       List<Widget> children = [];
       Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
       DeviceModel deviceModel = _models[dd.modelId]!;
@@ -901,7 +918,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               Text(
                 NoCodeUtils.getParameterLabel(field, deviceModel),
                 style: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
@@ -913,7 +930,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               Text(
                 '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
                 style: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
@@ -940,31 +957,75 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
           child: Text(
             dd.asset ?? '-',
             style: const TextStyle(
-                color: Colors.blue, overflow: TextOverflow.ellipsis),
+                color: Colors.blue,
+                overflow: TextOverflow.ellipsis,
+                fontWeight: FontWeight.bold),
           ),
         )),
-        DataCell(InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => DeviceHistoryPage(
-                        deviceName: dd.deviceName ?? '-',
-                        deviceId: dd.deviceId,
-                        modelId: dd.modelId,
-                        adminMode: false,
-                      )),
-            );
-          },
-          child: Text(
-            dd.deviceName ?? '-',
-            style: const TextStyle(
-                color: Colors.blue, overflow: TextOverflow.ellipsis),
-          ),
+        DataCell(Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              children: [
+                Tooltip(
+                  message: 'Device Serial#',
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DeviceHistoryPage(
+                                  deviceName: dd.deviceName ?? '-',
+                                  deviceId: dd.deviceId,
+                                  modelId: dd.modelId,
+                                  adminMode: false,
+                                )),
+                      );
+                    },
+                    child: Text(
+                      dd.hardwareDeviceId,
+                      style: const TextStyle(
+                          color: Colors.blue,
+                          overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Tooltip(
+              message: 'Device Model',
+              child: Text(
+                dd.modelName ?? '-',
+                style: const TextStyle(
+                    overflow: TextOverflow.ellipsis, fontSize: 12),
+              ),
+            ),
+            Tooltip(
+              message: 'Description',
+              child: Text(
+                dd.modelDescription ?? '-',
+                style: const TextStyle(
+                    overflow: TextOverflow.ellipsis, fontSize: 12),
+              ),
+            ),
+          ],
         )),
-        DataCell(Tooltip(
-            message: dt.toString(),
-            child: Text(timeago.format(dt, locale: 'en')))),
+        DataCell(Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              timeago.format(dT, locale: 'en'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              dT.toString(),
+            ),
+          ],
+        )),
         DataCell(Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -973,7 +1034,9 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               message: 'Premise',
               child: Text(
                 dd.premise ?? '-',
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
+                style: const TextStyle(
+                    overflow: TextOverflow.ellipsis,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             Tooltip(
