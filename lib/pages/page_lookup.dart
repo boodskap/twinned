@@ -65,11 +65,26 @@ class _TwinnedLookupPageState extends BaseState<TwinnedLookupPage> {
                           color: UserSession.getIconColor(),
                           size: UserSession.getIconSize(),
                         ),
-                        header: Text('Device Models', style: style),
+                        header: Text('Device Library', style: style),
                         content: const SizedBox(
                             height: 250,
                             child: TwinModel(
                               controlType: ComponentType.deviceModel,
+                            ))),
+                            AccordionSection(
+                        isOpen: false,
+                        headerBackgroundColorOpened: openColor,
+                        headerBackgroundColor: closeColor,
+                        leftIcon: Icon(
+                          Icons.departure_board_rounded,
+                          color: UserSession.getIconColor(),
+                          size: UserSession.getIconSize(),
+                        ),
+                        header: Text('Asset Library', style: style),
+                        content: const SizedBox(
+                            height: 250,
+                            child: TwinModel(
+                              controlType: ComponentType.assetModel,
                             ))),
                     AccordionSection(
                         isOpen: false,
@@ -80,7 +95,7 @@ class _TwinnedLookupPageState extends BaseState<TwinnedLookupPage> {
                           color: UserSession.getIconColor(),
                           size: UserSession.getIconSize(),
                         ),
-                        header: Text('Devices', style: style),
+                        header: Text('Installation Database', style: style),
                         content: const SizedBox(
                             height: 250,
                             child: TwinModel(
