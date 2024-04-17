@@ -5,6 +5,7 @@ import 'package:nocode_commons/custom/widgets/fillable_circle.dart';
 import 'package:nocode_commons/custom/widgets/fillable_rectangle.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:nocode_commons/widgets/device_fields.dart';
 
 import '../dashboard/page_device_history.dart';
 
@@ -32,21 +33,6 @@ class _DeviceInfraCardState extends BaseState<DeviceInfraCard> {
   String reported = 'reported ?';
   Widget image = missingImage;
   CustomWidget? customWidget;
-
-  @override
-  void initState() {
-    if (null != widget.device.customWidget) {
-      customWidget = widget.device.customWidget;
-    } else {
-      int sId = widget.device.selectedImage ?? 0;
-      sId = sId < 0 ? 0 : sId;
-      if (widget.device.images!.length > sId) {
-        image = UserSession()
-            .getImage(widget.device.domainKey, widget.device.images![sId]);
-      }
-    }
-    super.initState();
-  }
 
   @override
   void setup() async {
@@ -96,8 +82,8 @@ class _DeviceInfraCardState extends BaseState<DeviceInfraCard> {
         isHardwareDevice: false);
 
     if (validateResponse(ddRes)) {
-      data = ddRes.body!.data!;
-      var dt = DateTime.fromMillisecondsSinceEpoch(data!.updatedStamp);
+      data = ddRes.body?.data;
+      var dt = DateTime.fromMillisecondsSinceEpoch(data?.updatedStamp ?? 0);
       reported = 'reported ${timeago.format(dt, locale: 'en')}';
     }
 
@@ -156,7 +142,13 @@ class _DeviceInfraCardState extends BaseState<DeviceInfraCard> {
         );
         _pop();
       },
-      child: image,
+      child: SingleChildScrollView(
+        child: DeviceFields(
+          device: widget.device,
+          authToken: UserSession().getAuthToken(),
+          twinned: UserSession.twin,
+        ),
+      ),
     );
 
     refresh();

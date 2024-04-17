@@ -25,7 +25,7 @@ class _TagListState extends State<TagList> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      // spacing: 8.0,
+      spacing: 1.0,
       runSpacing: 5.0,
       children: widget.tagDataList.asMap().entries.map((entry) {
         final index = entry.key;
@@ -258,6 +258,7 @@ class _TableDialogState extends BaseState<TableDialog> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+             enabled: param.editable ?? true,
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                 border: UnderlineInputBorder(
@@ -318,6 +319,7 @@ class _TableDialogState extends BaseState<TableDialog> {
           label: paramList[i].label,
           attributeType: paramList[i].attributeType,
           value: controllers[i].text,
+          editable: paramList[i].editable ?? true
         );
         attributeList.add(param);
       }

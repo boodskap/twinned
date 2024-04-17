@@ -6,6 +6,7 @@ import 'package:twinned/pages/page_child.dart';
 import 'package:twinned/pages/widgets/role_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:nocode_commons/widgets/asset_fields.dart';
 
 class AssetInfraCard extends StatefulWidget {
   final Asset asset;
@@ -31,16 +32,6 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
   String reported = 'reported ?';
   Widget image = missingImage;
   List<String> rolesSelected = [];
-  @override
-  void initState() {
-    int sId = widget.asset.selectedImage ?? 0;
-    sId = sId < 0 ? 0 : sId;
-    if (widget.asset.images!.length > sId) {
-      image = UserSession()
-          .getImage(widget.asset.domainKey, widget.asset.images![sId]);
-    }
-    super.initState();
-  }
 
   @override
   void setup() async {
@@ -93,6 +84,14 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
         reported = 'reported ${timeago.format(dt, locale: 'en')}';
       }
     }
+
+    image = SingleChildScrollView(
+      child: AssetFields(
+        asset: widget.asset,
+        authToken: UserSession().getAuthToken(),
+        twinned: UserSession.twin,
+      ),
+    );
 
     refresh();
   }
@@ -213,12 +212,7 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
               ),
             ),
             divider(),
-            Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Center(child: image),
-                )),
+            Expanded(flex: 4, child: Center(child: image)),
             divider(),
             Padding(
               padding: const EdgeInsets.all(8.0),

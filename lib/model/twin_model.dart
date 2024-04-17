@@ -5,10 +5,7 @@ import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:twinned/widgets/commons/tag_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twinned;
 
-enum ComponentType {
-  deviceModel,
-  device,
-}
+enum ComponentType { deviceModel, device, assetModel }
 
 typedef BasicInfoCallback = void Function(
     String name, String? description, String? tags);
@@ -36,6 +33,7 @@ class _TwinModelState extends BaseState<TwinModel> {
   String? _search = '*';
   twinned.DeviceModel? model;
   twinned.Device? device;
+  twinned.AssetModel? assetModel;
   List<twinned.Lookup> settingList = [];
   @override
   void setup() async {
@@ -48,10 +46,13 @@ class _TwinModelState extends BaseState<TwinModel> {
 
     switch (widget.controlType) {
       case ComponentType.deviceModel:
-        title = 'Device Model';
+        title = 'Device Library';
         break;
       case ComponentType.device:
-        title = 'Device';
+        title = 'Installation Database';
+        break;
+      case ComponentType.assetModel:
+        title = 'Asset Library';
         break;
     }
 
@@ -91,6 +92,9 @@ class _TwinModelState extends BaseState<TwinModel> {
 
       case ComponentType.device:
         await _loadDevices();
+        break;
+      case ComponentType.assetModel:
+        await _loadAssetModels();
         break;
       default:
         break;
@@ -148,6 +152,31 @@ class _TwinModelState extends BaseState<TwinModel> {
     cards.add(newCard);
   }
 
+  void _buildAssetCard(String name, List<twinned.Lookup> settingData,
+      List<Widget> cards, String type, twinned.AssetModel assetData) {
+    settingList = [];
+    settingList = settingData;
+
+    Widget tagSection = Center(
+      child: SizedBox(
+          height: 150,
+          child: SingleChildScrollView(
+              child: TagList(
+            tagDataList: settingList,
+            onSave: (value) {
+              _updateAssetModel(value, assetData);
+            },
+          ))),
+    );
+    Widget newCard = CardSection(
+      cardHeight: widget.height,
+      cardWidth: widget.width,
+      name: name,
+      tagChild: tagSection,
+    );
+    cards.add(newCard);
+  }
+
   Future _updateDeviceModels(
       List<twinned.Lookup> settingsData, twinned.DeviceModel dmodelData) async {
     var res = await UserSession.twin.updateDeviceModel(
@@ -172,7 +201,7 @@ class _TwinModelState extends BaseState<TwinModel> {
 
     if (validateResponse(res)) {
       Navigator.pop(context);
-       alert('Success', 'Device model setting changes updated successfully');
+      alert('Success', 'Device model setting changes updated successfully');
       await load();
     }
   }
@@ -202,7 +231,36 @@ class _TwinModelState extends BaseState<TwinModel> {
 
     if (validateResponse(dRes)) {
       Navigator.pop(context);
-       alert('Success', 'Device setting changes updated successfully');
+      alert('Success', 'Device setting changes updated successfully');
+      await load();
+    }
+  }
+
+  Future _updateAssetModel(
+      List<twinned.Lookup> settingsData, twinned.AssetModel assetData) async {
+    var aRes = await UserSession.twin.updateAssetModel(
+        apikey: UserSession().getAuthToken(),
+        assetModelId: assetData.id,
+        body: twinned.AssetModelInfo(
+          name: assetData.name,
+          description: assetData.description,
+          tags: assetData.tags,
+          icon: assetData.icon,
+          images: assetData.images,
+          selectedImage: assetData.selectedImage,
+          // settings: widget.assetModel.settings,
+          settings: settingsData,
+          banners: assetData.banners,
+          geolocation: assetData.geolocation,
+          hasGeoLocation: assetData.hasGeoLocation,
+          metadata: assetData.metadata,
+          movable: assetData.movable,
+          selectedBanner: assetData.selectedBanner,
+        ));
+
+    if (validateResponse(aRes)) {
+      Navigator.pop(context);
+      alert('Success', 'Asset Model setting changes updated successfully');
       await load();
     }
   }
@@ -222,6 +280,33 @@ class _TwinModelState extends BaseState<TwinModel> {
             if (e.settings != null && e.settings!.isNotEmpty) {
               if (e.settings!.any((setting) => setting.settings != null)) {
                 _buildCard(e.name, e.settings!, cards, "DeviceModel", e);
+              }
+            }
+          }
+        }
+      }
+      refresh(sync: () {
+        _cards.clear();
+        _cards.addAll(cards);
+      });
+    });
+  }
+
+  Future _loadAssetModels() async {
+    await execute(() async {
+      List<Widget> cards = [];
+
+      var r = await UserSession.twin.searchAssetModels(
+          apikey: UserSession().getAuthToken(),
+          body: twinned.SearchReq(page: 0, size: 25, search: _search ?? '*'));
+      if (validateResponse(r)) {
+        if (r.body!.values!.isNotEmpty) {
+          for (twinned.AssetModel e in r.body!.values!) {
+            assetModel = e;
+            // model = r.body!.values![0];
+            if (e.settings != null && e.settings!.isNotEmpty) {
+              if (e.settings!.any((setting) => setting.settings != null)) {
+                _buildAssetCard(e.name, e.settings!, cards, "AssetModel", e);
               }
             }
           }
@@ -341,7 +426,7 @@ class _CardSectionState extends State<CardSection> {
             children: [
               const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.only(left:8,right:8),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
