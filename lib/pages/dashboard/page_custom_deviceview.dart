@@ -31,8 +31,6 @@ class FormGrids extends StatefulWidget {
   State<FormGrids> createState() => _FormGridsState();
 }
 
-
-
 class _FormGridsState extends State<FormGrids> {
   List<twin.DeviceView> entities = [];
   @override
@@ -71,9 +69,6 @@ class _FormGridsState extends State<FormGrids> {
     );
   }
 }
-
-
-
 
 class FinalDevView extends StatefulWidget {
   final twin.Twinned twinned;
@@ -294,7 +289,7 @@ class _FinalDevViewState extends BaseState<FinalDevView> {
               'width': myres[i].conditions[0].width,
               'conditions': myres[i].conditions[0],
               'bgColor': myres[i].conditions[0].bgColor,
-              'value': myres[i].conditions[0].value,
+              'value': myres[i].conditions[0].$value,
               'borderColor': myres[i].conditions[0].bordorColor,
               'fontSize': myres[i].conditions[0].fontSize
             });
@@ -310,7 +305,7 @@ class _FinalDevViewState extends BaseState<FinalDevView> {
               'width': myres[i].conditions[0].width,
               'conditions': myres[i].conditions[0],
               'bgColor': myres[i].conditions[0].bgColor,
-              'value': myres[i].conditions[0].value,
+              'value': myres[i].conditions[0].$value,
               'borderColor': myres[i].conditions[0].bordorColor,
               'fontSize': myres[i].conditions[0].fontSize
             });
@@ -406,7 +401,8 @@ class _FinalDevViewState extends BaseState<FinalDevView> {
                               child: deviceModel['img'] != 'EMPTY'
                                   ? Image.network(
                                       twinImageUrl(
-                                        widget.twinned.client.baseUrl.toString(),
+                                        widget.twinned.client.baseUrl
+                                            .toString(),
                                         deviceModel['domainkey'],
                                         deviceModel['img'],
                                       ),

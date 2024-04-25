@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nocode_commons/core/constants.dart';
+import 'package:nocode_commons/core/user_session.dart';
 import 'package:twinned/pages/landing/landing_build.dart';
 import 'package:twinned/pages/landing/landing_connect.dart';
 import 'package:twinned/pages/landing/landing_custom.dart';
@@ -46,6 +48,13 @@ class LandingPage extends StatelessWidget {
 
   Widget buildCustomPage(BuildContext context) {
     List<Widget> children = [];
+    Widget? image;
+
+    if (null != twinSysInfo && twinSysInfo!.logoImage!.isNotEmpty) {
+      image = UserSession()
+          .getImage(domainKey, twinSysInfo!.logoImage!, fit: BoxFit.contain);
+    }
+
     bool rightText = true;
     for (var element in twinSysInfo!.landingPages!) {
       children.add(CustomLandingPage(
@@ -62,21 +71,22 @@ class LandingPage extends StatelessWidget {
     return SafeArea(
       child: Column(
         children: [
-          const NocodeMenuBar(
-            selectedMenu: 'HOME',
-          ),
-          Container(
-            height: 8,
-            color: Colors.white,
-          ),
-          SizedBox(
-              //height: 40,
-              child: Container(
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
+          Row(
+            mainAxisAlignment: null != image
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.end,
+            children: [
+              if (null != image)
+                SizedBox(
+                    width: 180,
+                    height: 100,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: image!,
+                    )),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -108,12 +118,14 @@ class LandingPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  width: 8,
-                ),
-              ],
-            ),
-          )),
+              )
+            ],
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 1,
+            color: Colors.black,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -137,7 +149,7 @@ class LandingPage extends StatelessWidget {
     if (null != twinSysInfo && twinSysInfo!.landingPages!.isNotEmpty) {
       return Scaffold(
         body: buildCustomPage(context),
-        backgroundColor: bgColor,
+        backgroundColor: Colors.white,
       );
     }
 
