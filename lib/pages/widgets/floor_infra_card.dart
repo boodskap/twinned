@@ -234,30 +234,31 @@ class _FloorInfraCardState extends BaseState<FloorInfraCard> {
             ),
             divider(),
             Row(
-              mainAxisAlignment: UserSession().isAdmin()?  MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+              mainAxisAlignment: UserSession().isAdmin()
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.end,
               children: [
-                  if (UserSession().isAdmin())
-                Tooltip(
-                  message: "Roles",
-                  child: RolesWidget(
-                    currentRoles: rolesSelected,
-                    valueChanged: (value) {
-                      if (value.isNotEmpty) {
-                        setState(() {
-                          rolesSelected = value;
-                        });
-                      }
-                    },
-                    isSave: true,
-                    iconSize: 20,
-                     iconcolor:Colors.green,
-                    saveConfirm: (roleValue) {
-                      roleValue.removeWhere((element) => element.isEmpty);
-                      _updateFloor(
-                          widget.floor.copyWith(roles: roleValue));
-                    },
+                if (UserSession().isAdmin())
+                  Tooltip(
+                    message: "Roles",
+                    child: RolesWidget(
+                      currentRoles: rolesSelected,
+                      valueChanged: (value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            rolesSelected = value;
+                          });
+                        }
+                      },
+                      isSave: true,
+                      iconSize: 20,
+                      iconcolor: Colors.green,
+                      saveConfirm: (roleValue) {
+                        roleValue.removeWhere((element) => element.isEmpty);
+                        _updateFloor(widget.floor.copyWith(roles: roleValue));
+                      },
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -281,21 +282,19 @@ class _FloorInfraCardState extends BaseState<FloorInfraCard> {
           apikey: UserSession().getAuthToken(),
           floorId: widget.floor.id,
           body: FloorInfo(
-             facilityId: floorData.facilityId,
-              floorLevel: floorData.floorLevel,
-              floorType: FloorInfoFloorType.values
-          .byName(floorData.floorType.name),
-              name: floorData.name,
-              premiseId: floorData.premiseId,
-              assets: floorData.assets,
-              description: floorData.description,
-              floorPlan: floorData.floorPlan,
-              location: floorData.location,
-              roles: floorData.roles,
-              settings: floorData.settings,
-              tags: floorData.tags,
-
-             ));
+            facilityId: floorData.facilityId,
+            floorLevel: floorData.floorLevel,
+            floorType:
+                FloorInfoFloorType.values.byName(floorData.floorType.name),
+            name: floorData.name,
+            premiseId: floorData.premiseId,
+            assets: floorData.assets,
+            description: floorData.description,
+            floorPlan: floorData.floorPlan,
+            location: floorData.location,
+            roles: floorData.roles,
+            tags: floorData.tags,
+          ));
       if (validateResponse(res)) {
         await _load();
         Navigator.pop(context);

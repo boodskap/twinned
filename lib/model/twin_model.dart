@@ -27,8 +27,6 @@ class TwinModel extends StatefulWidget {
 }
 
 class _TwinModelState extends BaseState<TwinModel> {
-  @override
-  bool loading = false;
   final List<Widget> _cards = [];
   String? _search = '*';
   twinned.DeviceModel? model;
@@ -42,7 +40,6 @@ class _TwinModelState extends BaseState<TwinModel> {
 
   void help() {
     late final String title;
-    late final Widget snippet;
 
     switch (widget.controlType) {
       case ComponentType.deviceModel:
@@ -183,21 +180,26 @@ class _TwinModelState extends BaseState<TwinModel> {
         apikey: UserSession().getAuthToken(),
         modelId: dmodelData.id,
         body: twinned.DeviceModelInfo(
-          name: dmodelData.name,
-          description: dmodelData.description,
-          make: dmodelData.make,
-          model: dmodelData.model,
-          version: dmodelData.version,
-          tags: dmodelData.tags,
-          banners: dmodelData.banners,
-          images: dmodelData.images,
-          selectedBanner: dmodelData.selectedBanner,
-          selectedImage: dmodelData.selectedImage,
-          preprocessorId: dmodelData.preprocessorId,
-          parameters: dmodelData.parameters,
-          settings: settingsData,
-          customWidget: dmodelData.customWidget,
-        ));
+            name: dmodelData.name,
+            description: dmodelData.description,
+            make: dmodelData.make,
+            model: dmodelData.model,
+            version: dmodelData.version,
+            tags: dmodelData.tags,
+            banners: dmodelData.banners,
+            images: dmodelData.images,
+            selectedBanner: dmodelData.selectedBanner,
+            selectedImage: dmodelData.selectedImage,
+            preprocessorId: dmodelData.preprocessorId,
+            parameters: dmodelData.parameters,
+            customSettings: dmodelData.customSettings ?? [],
+            customWidget: dmodelData.customWidget,
+            makePublic: dmodelData.makePublic,
+            movable: dmodelData.movable,
+            metadata: dmodelData.metadata,
+            icon: dmodelData.icon,
+            hasGeoLocation: dmodelData.hasGeoLocation,
+            defaultView: dmodelData.defaultView));
 
     if (validateResponse(res)) {
       Navigator.pop(context);
@@ -212,22 +214,23 @@ class _TwinModelState extends BaseState<TwinModel> {
         apikey: UserSession().getAuthToken(),
         deviceId: deviceData.id,
         body: twinned.DeviceInfo(
-            name: deviceData.name,
-            modelId: deviceData.modelId,
-            deviceId: deviceData.deviceId,
-            description: deviceData.description,
-            banners: deviceData.banners,
-            images: deviceData.images,
-            selectedBanner: deviceData.selectedBanner,
-            selectedImage: deviceData.selectedImage,
-            tags: deviceData.tags,
-            icon: deviceData.icon,
-            hasGeoLocation: deviceData.hasGeoLocation,
-            movable: deviceData.movable,
-            geolocation: deviceData.geolocation,
-            preprocessorId: deviceData.preprocessorId,
-            settings: settingsData,
-            customWidget: deviceData.customWidget));
+          name: deviceData.name,
+          modelId: deviceData.modelId,
+          deviceId: deviceData.deviceId,
+          description: deviceData.description,
+          banners: deviceData.banners,
+          images: deviceData.images,
+          selectedBanner: deviceData.selectedBanner,
+          selectedImage: deviceData.selectedImage,
+          tags: deviceData.tags,
+          icon: deviceData.icon,
+          hasGeoLocation: deviceData.hasGeoLocation,
+          movable: deviceData.movable,
+          geolocation: deviceData.geolocation,
+          customWidget: deviceData.customWidget,
+          defaultView: deviceData.defaultView,
+          metadata: deviceData.metadata,
+        ));
 
     if (validateResponse(dRes)) {
       Navigator.pop(context);
@@ -248,14 +251,13 @@ class _TwinModelState extends BaseState<TwinModel> {
           icon: assetData.icon,
           images: assetData.images,
           selectedImage: assetData.selectedImage,
-          // settings: widget.assetModel.settings,
-          settings: settingsData,
           banners: assetData.banners,
           geolocation: assetData.geolocation,
           hasGeoLocation: assetData.hasGeoLocation,
           metadata: assetData.metadata,
           movable: assetData.movable,
           selectedBanner: assetData.selectedBanner,
+          deviceModelsIds: assetData.deviceModelsIds ?? [],
         ));
 
     if (validateResponse(aRes)) {
@@ -276,12 +278,7 @@ class _TwinModelState extends BaseState<TwinModel> {
         if (r.body!.values!.isNotEmpty) {
           for (twinned.DeviceModel e in r.body!.values!) {
             model = e;
-            // model = r.body!.values![0];
-            if (e.settings != null && e.settings!.isNotEmpty) {
-              if (e.settings!.any((setting) => setting.settings != null)) {
-                _buildCard(e.name, e.settings!, cards, "DeviceModel", e);
-              }
-            }
+            _buildCard(e.name, [], cards, "DeviceModel", e);
           }
         }
       }
@@ -303,12 +300,7 @@ class _TwinModelState extends BaseState<TwinModel> {
         if (r.body!.values!.isNotEmpty) {
           for (twinned.AssetModel e in r.body!.values!) {
             assetModel = e;
-            // model = r.body!.values![0];
-            if (e.settings != null && e.settings!.isNotEmpty) {
-              if (e.settings!.any((setting) => setting.settings != null)) {
-                _buildAssetCard(e.name, e.settings!, cards, "AssetModel", e);
-              }
-            }
+            _buildAssetCard(e.name, [], cards, "AssetModel", e);
           }
         }
       }
@@ -330,11 +322,7 @@ class _TwinModelState extends BaseState<TwinModel> {
         for (twinned.Device e in r.body!.values!) {
           // device = e;
           device = r.body!.values![0];
-          if (e.settings != null && e.settings!.isNotEmpty) {
-            if (e.settings!.any((setting) => setting.settings != null)) {
-              _buildDeviceCard(e.name, e.settings!, cards, "Device", e);
-            }
-          }
+          _buildDeviceCard(e.name, [], cards, "Device", e);
         }
       }
       refresh(sync: () {

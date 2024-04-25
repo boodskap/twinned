@@ -30,7 +30,7 @@ class _TagListState extends State<TagList> {
       children: widget.tagDataList.asMap().entries.map((entry) {
         final index = entry.key;
         final data = entry.value;
-        return data.settings != null
+        return data.attributes != null
             ? TagWidget(
                 tagData: data,
                 onSave: widget.onSave,
@@ -52,7 +52,8 @@ class TagWidget extends StatelessWidget {
   final int settingsIndex;
   final List<twinned.Lookup> currentDataList;
   // final List<twinned.Lookup> list;
-  const TagWidget({super.key, 
+  const TagWidget({
+    super.key,
     required this.tagData,
     this.onTagRemoved,
     required this.onSave,
@@ -80,10 +81,7 @@ class TagWidget extends StatelessWidget {
               ),
               const SizedBox(width: 4.0),
               InkWell(
-                onTap: () {
-                  _showTableDialog(context, tagData.settings!, onSave,
-                      tagData.name, settingsIndex, currentDataList);
-                },
+                onTap: () {},
                 child: const Icon(
                   Icons.edit,
                   color: primaryColor,
@@ -138,7 +136,7 @@ class _TableDialogState extends BaseState<TableDialog> {
       paramList.addAll(widget.settings.attributes!);
       controllers = List.generate(
         paramList.length,
-        (index) => TextEditingController(text: paramList[index].value ?? ''),
+        (index) => TextEditingController(text: paramList[index].$value ?? ''),
       );
       setState(() {
         apiLoadingStatus = true;
@@ -258,7 +256,7 @@ class _TableDialogState extends BaseState<TableDialog> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-             enabled: param.editable ?? true,
+              enabled: param.editable ?? true,
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                 border: UnderlineInputBorder(
@@ -299,39 +297,7 @@ class _TableDialogState extends BaseState<TableDialog> {
     );
   }
 
-  void _saveSettings() {
-    bool hasEmptyField = false;
-    for (int i = 0; i < controllers.length; i++) {
-      if (controllers[i].text.isEmpty) {
-        hasEmptyField = true;
-        break;
-      }
-    }
-
-    if (hasEmptyField) {
-      alert('Warning', 'Please fill value fields.');
-    } else {
-      List<twinned.Attribute> attributeList = [];
-      for (int i = 0; i < paramList.length; i++) {
-        var param = twinned.Attribute(
-          name: paramList[i].name,
-          description: paramList[i].description,
-          label: paramList[i].label,
-          attributeType: paramList[i].attributeType,
-          value: controllers[i].text,
-          editable: paramList[i].editable ?? true
-        );
-        attributeList.add(param);
-      }
-
-      List<twinned.Lookup> newLookupList = widget.currentDataList;
-      var lookup = twinned.Lookup(
-          name: widget.name,
-          settings: widget.settings.copyWith(attributes: attributeList));
-      newLookupList[widget.settingsIndex] = lookup;
-      widget.onSave(newLookupList);
-    }
-  }
+  void _saveSettings() {}
 
   @override
   void setup() {

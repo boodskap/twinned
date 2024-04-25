@@ -292,7 +292,7 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
             assetModelId: assetData.assetModelId,
             description: assetData.description,
             tags: assetData.tags,
-            settings: assetData.settings,
+            lookups: assetData.lookups,
             roles: assetData.roles,
             images: assetData.images,
             location: assetData.location,
