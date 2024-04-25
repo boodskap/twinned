@@ -192,33 +192,36 @@ class _PremiseInfraCardState extends BaseState<PremiseInfraCard> {
             ),
             divider(),
             Row(
-              mainAxisAlignment: UserSession().isAdmin()?  MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+              mainAxisAlignment: UserSession().isAdmin()
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.end,
               children: [
-                 if (UserSession().isAdmin())
-                Tooltip(
-                  message: "Roles",
-                  child: RolesWidget(
-                    currentRoles: rolesSelected,
-                    valueChanged: (value) {
-                      if (value.isNotEmpty) {
-                        setState(() {
-                          rolesSelected = value;
-                        });
-                      }
-                    },
-                    isSave: true,
-                    iconSize: 20,
-                    iconcolor:Colors.green,
-                    saveConfirm: (roleValue) {
-                      roleValue.removeWhere((element) => element.isEmpty);
-                      // print(widget.premise.name);
-                      // print(roleValue);
-                      // print(widget.premise.copyWith(roles: roleValue));
+                if (UserSession().isAdmin())
+                  Tooltip(
+                    message: "Roles",
+                    child: RolesWidget(
+                      currentRoles: rolesSelected,
+                      valueChanged: (value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            rolesSelected = value;
+                          });
+                        }
+                      },
+                      isSave: true,
+                      iconSize: 20,
+                      iconcolor: Colors.green,
+                      saveConfirm: (roleValue) {
+                        roleValue.removeWhere((element) => element.isEmpty);
+                        // print(widget.premise.name);
+                        // print(roleValue);
+                        // print(widget.premise.copyWith(roles: roleValue));
 
-                      _updatePremise(widget.premise.copyWith(roles: roleValue));
-                    },
+                        _updatePremise(
+                            widget.premise.copyWith(roles: roleValue));
+                      },
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -246,7 +249,6 @@ class _PremiseInfraCardState extends BaseState<PremiseInfraCard> {
               name: premiseData.name,
               description: premiseData.description,
               tags: premiseData.tags,
-              settings: premiseData.settings,
               roles: premiseData.roles,
               images: premiseData.images,
               location: premiseData.location,

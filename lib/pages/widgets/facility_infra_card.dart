@@ -221,30 +221,32 @@ class _FacilityInfraCardState extends BaseState<FacilityInfraCard> {
             ),
             divider(),
             Row(
-              mainAxisAlignment: UserSession().isAdmin()?  MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+              mainAxisAlignment: UserSession().isAdmin()
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.end,
               children: [
                 if (UserSession().isAdmin())
-                Tooltip(
-                  message: "Roles",
-                  child: RolesWidget(
-                    currentRoles: rolesSelected,
-                    valueChanged: (value) {
-                      if (value.isNotEmpty) {
-                        setState(() {
-                          rolesSelected = value;
-                        });
-                      }
-                    },
-                    isSave: true,
-                    iconSize: 20,
-                     iconcolor:Colors.green,
-                    saveConfirm: (roleValue) {
-                      roleValue.removeWhere((element) => element.isEmpty);
-                      _updateFacility(
-                          widget.facility.copyWith(roles: roleValue));
-                    },
+                  Tooltip(
+                    message: "Roles",
+                    child: RolesWidget(
+                      currentRoles: rolesSelected,
+                      valueChanged: (value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            rolesSelected = value;
+                          });
+                        }
+                      },
+                      isSave: true,
+                      iconSize: 20,
+                      iconcolor: Colors.green,
+                      saveConfirm: (roleValue) {
+                        roleValue.removeWhere((element) => element.isEmpty);
+                        _updateFacility(
+                            widget.facility.copyWith(roles: roleValue));
+                      },
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -275,7 +277,6 @@ class _FacilityInfraCardState extends BaseState<FacilityInfraCard> {
               tags: faciltyData.tags,
               location: faciltyData.location,
               roles: faciltyData.roles,
-              settings: faciltyData.settings,
               name: faciltyData.name));
       if (validateResponse(res)) {
         await _load();
