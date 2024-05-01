@@ -911,14 +911,17 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
             NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
         if (type == widgets.SensorWidgetType.none) {
           String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
-          children.add(Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children.add(Wrap(
+            spacing: 4.0,
+            direction: Axis.vertical,
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 NoCodeUtils.getParameterLabel(field, deviceModel),
                 style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
@@ -930,7 +933,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               Text(
                 '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
                 style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
@@ -957,14 +960,14 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
           child: Text(
             dd.asset ?? '-',
             style: const TextStyle(
+                fontSize: 14,
                 color: Colors.blue,
                 overflow: TextOverflow.ellipsis,
                 fontWeight: FontWeight.bold),
           ),
         )),
-        DataCell(Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        DataCell(Wrap(
+          spacing: 4.0,
           children: [
             Wrap(
               children: [
@@ -1000,7 +1003,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               child: Text(
                 dd.modelName ?? '-',
                 style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 12),
+                    overflow: TextOverflow.ellipsis, fontSize: 14),
               ),
             ),
             Tooltip(
@@ -1008,14 +1011,13 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               child: Text(
                 dd.modelDescription ?? '-',
                 style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 12),
+                    overflow: TextOverflow.ellipsis, fontSize: 14),
               ),
             ),
           ],
         )),
-        DataCell(Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        DataCell(Wrap(
+          spacing: 4.0,
           children: [
             Text(
               timeago.format(dT, locale: 'en'),
@@ -1026,30 +1028,32 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
             ),
           ],
         )),
-        DataCell(Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        DataCell(Wrap(
+          spacing: 4.0,
           children: [
             Tooltip(
               message: 'Premise',
               child: Text(
-                dd.premise ?? '-',
+                dd.premise ?? '',
                 style: const TextStyle(
+                    fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
             ),
+            divider(),
             Tooltip(
               message: 'Facility',
               child: Text(
-                dd.facility ?? '-',
+                dd.facility ?? '',
                 style: const TextStyle(overflow: TextOverflow.ellipsis),
               ),
             ),
+            divider(),
             Tooltip(
               message: 'Floor',
               child: Text(
-                dd.floor ?? '-',
+                dd.floor ?? '',
                 style: const TextStyle(overflow: TextOverflow.ellipsis),
               ),
             ),
