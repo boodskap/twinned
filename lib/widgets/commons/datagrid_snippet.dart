@@ -12,9 +12,16 @@ import 'package:nocode_commons/core/user_session.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:data_table_2/data_table_2.dart';
 import 'package:twinned_widgets/twinned_widgets.dart' as widgets;
+import 'package:chopper/chopper.dart' as chopper;
+
+enum FilterType { none, data, field, group }
 
 class DataGridSnippet extends StatefulWidget {
-  const DataGridSnippet({super.key});
+  final FilterType filterType;
+  final AssetGroup? group;
+  final String? filterId;
+  const DataGridSnippet(
+      {super.key, required this.filterType, this.group, this.filterId});
 
   @override
   State<DataGridSnippet> createState() => DataGridSnippetState();
@@ -23,6 +30,7 @@ class DataGridSnippet extends StatefulWidget {
 class DataGridSnippetState extends BaseState<DataGridSnippet> {
   final List<DeviceData> _data = [];
   final Map<String, DeviceModel> _models = {};
+  final List<String> _modelIds = [];
 
   @override
   void setup() {
@@ -40,23 +48,73 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
     await execute(() async {
       _data.clear();
       _models.clear();
+      _modelIds.clear();
 
-      var dRes = await UserSession.twin.searchRecentDeviceData(
-          apikey: UserSession().getAuthToken(),
-          body: FilterSearchReq(search: search, page: page, size: size));
+      late final chopper.Response<DeviceDataArrayRes> dRes;
 
-      if (validateResponse(dRes)) {
-        _data.addAll(dRes.body!.values!);
+      switch (widget.filterType) {
+        case FilterType.none:
+          dRes = await UserSession.twin.searchRecentDeviceData(
+              apikey: UserSession().getAuthToken(),
+              body: FilterSearchReq(search: search, page: page, size: size));
+          break;
+        case FilterType.data:
+          dRes = await UserSession.twin.filterRecentDeviceData(
+              apikey: UserSession().getAuthToken(),
+              filterId: widget.filterId,
+              page: page,
+              size: size);
+          break;
+        case FilterType.field:
+          dRes = await UserSession.twin.fieldFilterRecentDeviceData(
+              apikey: UserSession().getAuthToken(),
+              fieldFilterId: widget.filterId,
+              page: page,
+              size: size);
+          break;
+        case FilterType.group:
+          break;
+        // TODO: Handle this case.
+      }
 
-        List<String> modelIds = [];
+      if (widget.filterType != FilterType.group) {
+        if (validateResponse(dRes)) {
+          _data.addAll(dRes.body!.values!);
 
-        for (DeviceData dd in _data) {
-          if (modelIds.contains(dd.modelId)) continue;
-          modelIds.add(dd.modelId);
+          for (DeviceData dd in _data) {
+            if (_modelIds.contains(dd.modelId)) continue;
+            _modelIds.add(dd.modelId);
+          }
+
+          var mRes = await UserSession.twin.getDeviceModels(
+              apikey: UserSession().getAuthToken(),
+              body: GetReq(ids: _modelIds));
+
+          if (validateResponse(mRes)) {
+            for (var deviceModel in mRes.body!.values!) {
+              _models[deviceModel.id] = deviceModel;
+            }
+          }
+        }
+      } else {
+        for (String assetId in widget.group!.assetIds) {
+          var sRes = await UserSession.twin.searchRecentDeviceData(
+              apikey: UserSession().getAuthToken(),
+              assetId: assetId,
+              body: FilterSearchReq(search: search, page: page, size: size));
+
+          if (validateResponse(sRes)) {
+            _data.addAll(sRes.body!.values!);
+
+            for (DeviceData dd in _data) {
+              if (_modelIds.contains(dd.modelId)) continue;
+              _modelIds.add(dd.modelId);
+            }
+          }
         }
 
         var mRes = await UserSession.twin.getDeviceModels(
-            apikey: UserSession().getAuthToken(), body: GetReq(ids: modelIds));
+            apikey: UserSession().getAuthToken(), body: GetReq(ids: _modelIds));
 
         if (validateResponse(mRes)) {
           for (var deviceModel in mRes.body!.values!) {

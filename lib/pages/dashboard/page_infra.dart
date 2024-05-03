@@ -424,8 +424,9 @@ class _InfraPageState extends BaseState<InfraPage> {
         if (widget.currentView == CurrentView.grid)
           Flexible(
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: DataGridSnippet(
+                filterType: FilterType.none,
                 key: dataGridKey,
               ),
             ),
