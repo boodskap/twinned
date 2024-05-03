@@ -183,14 +183,14 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
           ],
         ),
         divider(),
-        if (_dataFilters.isNotEmpty)
+        if (cards.isNotEmpty)
           SingleChildScrollView(
             child: Wrap(
               spacing: 8,
               children: cards,
             ),
           ),
-        if (_dataFilters.isEmpty)
+        if (cards.isEmpty)
           const Align(
               alignment: Alignment.center, child: Text('No filter found')),
       ],
