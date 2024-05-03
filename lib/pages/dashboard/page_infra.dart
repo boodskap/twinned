@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -14,6 +13,7 @@ import 'package:twinned/pages/widgets/facility_infra_card.dart';
 import 'package:twinned/pages/widgets/floor_infra_card.dart';
 import 'package:twinned/pages/widgets/premise_infra_card.dart';
 import 'package:twinned/providers/state_provider.dart';
+import 'package:twinned/widgets/commons/datagrid_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -63,8 +63,8 @@ class _InfraPageState extends BaseState<InfraPage> {
   final List<DeviceData> _data = [];
 
   final GlobalKey<_InfraMapViewState> mapViewKey = GlobalKey();
-  final GlobalKey<_InfraGridViewState> gridViewKey = GlobalKey();
   final GlobalKey<_InfraAssetViewState> assetViewKey = GlobalKey();
+  final GlobalKey<DataGridSnippetState> dataGridKey = GlobalKey();
 
   @override
   void initState() {
@@ -349,8 +349,8 @@ class _InfraPageState extends BaseState<InfraPage> {
                       }
                       break;
                     case CurrentView.grid:
-                      if (null != gridViewKey.currentState) {
-                        await gridViewKey.currentState!._load();
+                      if (null != dataGridKey.currentState) {
+                        await dataGridKey.currentState!.load(search: search);
                       }
                       break;
                   }
@@ -379,7 +379,7 @@ class _InfraPageState extends BaseState<InfraPage> {
                       await assetViewKey.currentState!._load();
                       break;
                     case CurrentView.grid:
-                      await gridViewKey.currentState!._load();
+                      await dataGridKey.currentState!.load(search: search);
                       break;
                   }
                 },
@@ -423,11 +423,9 @@ class _InfraPageState extends BaseState<InfraPage> {
         if (widget.currentView == CurrentView.grid)
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _InfraGridView(
-                key: gridViewKey,
-                page: widget,
-                state: this,
+              padding: EdgeInsets.all(8.0),
+              child: DataGridSnippet(
+                key: dataGridKey,
               ),
             ),
           ),
@@ -802,301 +800,5 @@ class _InfraAssetViewState extends BaseState<_InfraAssetView> {
         }).toList(),
       ),
     ));
-  }
-}
-
-class _InfraGridView extends StatefulWidget {
-  final InfraPage page;
-  final _InfraPageState state;
-
-  const _InfraGridView({super.key, required this.page, required this.state});
-
-  @override
-  State<_InfraGridView> createState() => _InfraGridViewState();
-}
-
-class _InfraGridViewState extends BaseState<_InfraGridView> {
-  final List<DeviceData> _data = [];
-  final Map<String, DeviceModel> _models = {};
-
-  @override
-  void setup() {
-    _load();
-  }
-
-  Future _load() async {
-    if (loading) return;
-    loading = true;
-
-    await execute(() async {
-      _data.clear();
-      _models.clear();
-
-      var dRes = await UserSession.twin.searchRecentDeviceData(
-          apikey: UserSession().getAuthToken(),
-          body: FilterSearchReq(
-              search: widget.state.search, page: 0, size: 1000));
-
-      if (validateResponse(dRes)) {
-        _data.addAll(dRes.body!.values!);
-
-        List<String> modelIds = [];
-
-        for (DeviceData dd in _data) {
-          if (modelIds.contains(dd.modelId)) continue;
-          modelIds.add(dd.modelId);
-        }
-
-        var mRes = await UserSession.twin.getDeviceModels(
-            apikey: UserSession().getAuthToken(), body: GetReq(ids: modelIds));
-
-        if (validateResponse(mRes)) {
-          for (var deviceModel in mRes.body!.values!) {
-            _models[deviceModel.id] = deviceModel;
-          }
-        }
-      }
-    });
-
-    loading = false;
-    refresh();
-  }
-
-  Widget _buildTable() {
-    List<DataColumn2> columns = [];
-    List<DataRow2> rows = [];
-
-    columns.addAll([
-      const DataColumn2(
-        label: Text(
-          'Asset',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      const DataColumn2(
-        label: Text(
-          'Device',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      const DataColumn2(
-        label: Text(
-          'Last Reported',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      const DataColumn2(
-        label: Text(
-          'Location',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      DataColumn2(
-          label: const Center(
-              child: Text(
-            'Sensor Data',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          )),
-          fixedWidth: MediaQuery.of(context).size.width / 2),
-    ]);
-
-    for (var dd in _data) {
-      var dT = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
-      List<Widget> children = [];
-      Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
-      DeviceModel deviceModel = _models[dd.modelId]!;
-      List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
-      for (String field in fields) {
-        widgets.SensorWidgetType type =
-            NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
-        if (type == widgets.SensorWidgetType.none) {
-          String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
-          children.add(Column(
-            children: [
-              Text(
-                NoCodeUtils.getParameterLabel(field, deviceModel),
-                style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
-              ),
-              if (iconId.isNotEmpty) divider(),
-              if (iconId.isNotEmpty)
-                SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: UserSession().getImage(dd.domainKey, iconId)),
-              divider(),
-              Text(
-                '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
-                style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ));
-          children.add(divider(horizontal: true, width: 24));
-        } else {
-          Parameter? parameter =
-              NoCodeUtils.getParameter(field, _models[dd.modelId]!);
-          children.add(SizedBox(
-              width: 160,
-              height: 160,
-              child: widgets.SensorWidget(
-                parameter: parameter!,
-                deviceData: dd,
-                deviceModel: deviceModel,
-                tiny: true,
-              )));
-        }
-      }
-
-      rows.add(DataRow2(cells: [
-        DataCell(InkWell(
-          onTap: () {},
-          child: Text(
-            dd.asset ?? '-',
-            style: const TextStyle(
-                fontSize: 14,
-                color: Colors.blue,
-                overflow: TextOverflow.ellipsis,
-                fontWeight: FontWeight.bold),
-          ),
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Wrap(
-              children: [
-                Tooltip(
-                  message: 'Device Serial#',
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeviceHistoryPage(
-                                  deviceName: dd.deviceName ?? '-',
-                                  deviceId: dd.deviceId,
-                                  modelId: dd.modelId,
-                                  adminMode: false,
-                                )),
-                      );
-                    },
-                    child: Text(
-                      dd.hardwareDeviceId,
-                      style: const TextStyle(
-                          color: Colors.blue,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Tooltip(
-              message: 'Device Model',
-              child: Text(
-                dd.modelName ?? '-',
-                style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 14),
-              ),
-            ),
-            Tooltip(
-              message: 'Description',
-              child: Text(
-                dd.modelDescription ?? '-',
-                style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 14),
-              ),
-            ),
-          ],
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Text(
-              timeago.format(dT, locale: 'en'),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              dT.toString(),
-            ),
-          ],
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Tooltip(
-              message: 'Premise',
-              child: Text(
-                dd.premise ?? '',
-                style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            divider(),
-            Tooltip(
-              message: 'Facility',
-              child: Text(
-                dd.facility ?? '',
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
-              ),
-            ),
-            divider(),
-            Tooltip(
-              message: 'Floor',
-              child: Text(
-                dd.floor ?? '',
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
-              ),
-            ),
-          ],
-        )),
-        DataCell(Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: children,
-            ),
-          ),
-        )),
-      ]));
-    }
-
-    return DataTable2(
-        dataRowHeight: 100,
-        columnSpacing: 12,
-        horizontalMargin: 12,
-        minWidth: 600,
-        columns: columns,
-        rows: rows);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_data.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('No data found'),
-              divider(horizontal: true),
-              const BusyIndicator(),
-            ],
-          )
-        ],
-      );
-    }
-
-    return _buildTable();
   }
 }
