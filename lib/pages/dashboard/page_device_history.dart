@@ -531,6 +531,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                     height: 300,
                     child: Center(
                       child: DefaultDeviceView(
+                        deviceData: data,
                         deviceId: data.deviceId,
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
@@ -575,7 +576,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                     child: Center(
                       child: ListView.builder(
                           itemCount: data.evaluationErrors!.length,
-                          itemBuilder: (contex, index) {
+                          itemBuilder: (context, index) {
                             return Text(data.evaluationErrors![index]);
                           }),
                     ),

@@ -213,7 +213,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           spacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Icon(Icons.crisis_alert),
+            Icon(Icons.add_alert),
             Text(
               'Alarms',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
