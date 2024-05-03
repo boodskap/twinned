@@ -292,7 +292,6 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
             assetModelId: assetData.assetModelId,
             description: assetData.description,
             tags: assetData.tags,
-            lookups: assetData.lookups,
             roles: assetData.roles,
             images: assetData.images,
             location: assetData.location,
@@ -301,6 +300,7 @@ class _AssetInfraCardState extends BaseState<AssetInfraCard> {
             facilityId: assetData.facilityId,
             floorId: assetData.floorId,
             devices: assetData.devices,
+            position: assetData.position,
           ));
       if (validateResponse(res)) {
         await _load();

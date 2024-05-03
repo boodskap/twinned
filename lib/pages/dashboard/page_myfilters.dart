@@ -14,7 +14,8 @@ class MyFiltersPage extends StatefulWidget {
 }
 
 class _MyFiltersPageState extends BaseState<MyFiltersPage> {
-  final List<DataFilter> _filters = [];
+  final List<FieldFilter> _fieldFilters = [];
+  final List<DataFilter> _dataFilters = [];
 
   Widget bannerImage = Image.asset(
     'assets/images/ldashboard_banner.png',
@@ -38,20 +39,29 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
   Future _load() async {
     if (loading) return;
     loading = true;
+
+    _dataFilters.clear();
+
     await execute(() async {
-      _filters.clear();
-      var res = await UserSession.twin.listDataFilters(
+      var ffRes = await UserSession.twin.listFieldFilters(
           apikey: UserSession().getAuthToken(),
           body: const ListReq(page: 0, size: 10000));
-      if (validateResponse(res)) {
+      if (validateResponse(ffRes)) {
         setState(() {
-          _filters.addAll(res.body!.values!);
+          _fieldFilters.addAll(ffRes.body!.values!);
         });
       }
-      if (_filters.isNotEmpty) {
-        debugPrint(_filters.first.toString());
+
+      var dfRes = await UserSession.twin.listDataFilters(
+          apikey: UserSession().getAuthToken(),
+          body: const ListReq(page: 0, size: 10000));
+      if (validateResponse(dfRes)) {
+        setState(() {
+          _dataFilters.addAll(dfRes.body!.values!);
+        });
       }
     });
+
     loading = false;
   }
 
@@ -59,7 +69,7 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
   Widget build(BuildContext context) {
     final List<Widget> cards = [];
 
-    for (var filter in _filters) {
+    for (var filter in _fieldFilters) {
       Widget? image;
       if (null != filter.icon && filter.icon!.isNotEmpty) {
         image = UserSession().getImage(filter.domainKey, filter.icon!);
@@ -73,7 +83,7 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => MyAssetsPage(
-                          filter: filter,
+                          fieldFilter: filter,
                         )),
               );
             },
@@ -90,10 +100,57 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
                         SizedBox(width: 48, height: 48, child: image),
                       if (null != image) divider(),
                       Tooltip(
-                        message: filter.name,
-                        child: Text(filter.name,
-                        style: const TextStyle(overflow: TextOverflow.ellipsis),
+                          message: filter.name,
+                          child: Text(
+                            filter.name,
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis),
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )));
+    }
+
+    for (var filter in _dataFilters) {
+      Widget? image;
+      if (null != filter.icon && filter.icon!.isNotEmpty) {
+        image = UserSession().getImage(filter.domainKey, filter.icon!);
+      }
+      cards.add(SizedBox(
+          width: 200,
+          height: 200,
+          child: InkWell(
+            onDoubleTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyAssetsPage(
+                          dataFilter: filter,
                         )),
+              );
+            },
+            child: Card(
+              elevation: 10,
+              child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (null != image)
+                        SizedBox(width: 48, height: 48, child: image),
+                      if (null != image) divider(),
+                      Tooltip(
+                          message: filter.name,
+                          child: Text(
+                            filter.name,
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis),
+                          )),
                     ],
                   ),
                 ),
@@ -126,14 +183,14 @@ class _MyFiltersPageState extends BaseState<MyFiltersPage> {
           ],
         ),
         divider(),
-        if (_filters.isNotEmpty)
+        if (_dataFilters.isNotEmpty)
           SingleChildScrollView(
             child: Wrap(
               spacing: 8,
               children: cards,
             ),
           ),
-        if (_filters.isEmpty)
+        if (_dataFilters.isEmpty)
           const Align(
               alignment: Alignment.center, child: Text('No filter found')),
       ],
