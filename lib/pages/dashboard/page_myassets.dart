@@ -153,30 +153,33 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
       cards.add(SizedBox(
         width: 500,
         height: 400,
-        child: DefaultAssetView(
-            twinned: UserSession.twin,
-            authToken: UserSession().getAuthToken(),
-            assetId: assetId,
-            onAssetDoubleTapped: (DeviceData dd) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DeviceHistoryPage(
-                          deviceName: dd.deviceName ?? '-',
-                          deviceId: dd.deviceId,
-                          modelId: dd.modelId,
-                          adminMode: false,
-                        )),
-              );
-            },
-            onAssetAnalyticsTapped: (DeviceData dd) async {
-              await Navigator.push(
+        child: Card(
+          elevation: 10,
+          child: DefaultAssetView(
+              twinned: UserSession.twin,
+              authToken: UserSession().getAuthToken(),
+              assetId: assetId,
+              onAssetDoubleTapped: (DeviceData dd) async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DeviceAnalyticsPage(
-                            data: dd,
-                          )));
-            }),
+                      builder: (context) => DeviceHistoryPage(
+                            deviceName: dd.deviceName ?? '-',
+                            deviceId: dd.deviceId,
+                            modelId: dd.modelId,
+                            adminMode: false,
+                          )),
+                );
+              },
+              onAssetAnalyticsTapped: (DeviceData dd) async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DeviceAnalyticsPage(
+                              data: dd,
+                            )));
+              }),
+        ),
       ));
     }
 
@@ -192,12 +195,10 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
       );
     }
 
-    return Flexible(
-      child: ListView.builder(
-          itemCount: cards.length,
-          itemBuilder: (context, index) {
-            return cards[index];
-          }),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Wrap(spacing: 8, children: cards),
+      ),
     );
   }
 
@@ -208,14 +209,14 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
     String? filterId;
 
     if (null != widget.group) {
-      name = widget.group!.name;
+      name = '${widget.group!.name} - Asset Group';
       filterType = FilterType.group;
     } else if (null != widget.fieldFilter) {
-      name = widget.fieldFilter!.name;
+      name = '${widget.fieldFilter!.name} - Global Filter';
       filterType = FilterType.field;
       filterId = widget.fieldFilter!.id;
     } else if (null != widget.dataFilter) {
-      name = widget.dataFilter!.name;
+      name = '${widget.dataFilter!.name} - Asset Filter';
       filterType = FilterType.data;
       filterId = widget.dataFilter!.id;
     }
@@ -223,7 +224,7 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
     return Scaffold(
       body: Column(
         children: [
-          TopBar(title: '$name - Assets'),
+          TopBar(title: name),
           SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 100,

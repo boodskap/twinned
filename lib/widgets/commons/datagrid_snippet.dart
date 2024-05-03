@@ -5,8 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:nocode_commons/core/base_state.dart';
 import 'package:nocode_commons/util/nocode_utils.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:nocode_commons/widgets/default_assetview.dart';
 import 'package:nocode_commons/widgets/device_component.dart';
+import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
+import 'package:twinned/pages/dashboard/page_modelgrid.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:nocode_commons/core/user_session.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -14,14 +17,19 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:twinned_widgets/twinned_widgets.dart' as widgets;
 import 'package:chopper/chopper.dart' as chopper;
 
-enum FilterType { none, data, field, group }
+enum FilterType { none, data, field, group, model }
 
 class DataGridSnippet extends StatefulWidget {
   final FilterType filterType;
   final AssetGroup? group;
   final String? filterId;
+  final String? modelId;
   const DataGridSnippet(
-      {super.key, required this.filterType, this.group, this.filterId});
+      {super.key,
+      required this.filterType,
+      this.group,
+      this.filterId,
+      this.modelId});
 
   @override
   State<DataGridSnippet> createState() => DataGridSnippetState();
@@ -54,8 +62,10 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
 
       switch (widget.filterType) {
         case FilterType.none:
+        case FilterType.model:
           dRes = await UserSession.twin.searchRecentDeviceData(
               apikey: UserSession().getAuthToken(),
+              modelId: widget.modelId,
               body: FilterSearchReq(search: search, page: page, size: size));
           break;
         case FilterType.data:
@@ -142,6 +152,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
 
     columns.addAll([
       const DataColumn2(
+        fixedWidth: 200,
         label: Wrap(
           spacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -155,6 +166,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         ),
       ),
       const DataColumn2(
+        fixedWidth: 200,
         label: Wrap(
           spacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -168,6 +180,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         ),
       ),
       const DataColumn2(
+        fixedWidth: 200,
         label: Wrap(
           spacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -181,6 +194,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         ),
       ),
       const DataColumn2(
+        fixedWidth: 200,
         label: Wrap(
           spacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -193,20 +207,34 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           ],
         ),
       ),
+      const DataColumn2(
+        fixedWidth: 300,
+        label: Wrap(
+          spacing: 4.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Icon(Icons.crisis_alert),
+            Text(
+              'Alarms',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
       DataColumn2(
-          label: const Center(
-              child: Wrap(
-            spacing: 4.0,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.menu),
-              Text(
-                'Sensor Data',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ],
-          )),
-          fixedWidth: MediaQuery.of(context).size.width / 2),
+        //fixedWidth: 400,
+        label: Wrap(
+          spacing: 4.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Icon(Icons.menu),
+            Text(
+              'Sensor Data',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
     ]);
 
     for (var dd in _data) {
@@ -267,53 +295,73 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              child: Text(
-                dd.asset ?? '-',
-                style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.blue,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
+              onTap: null == dd.assetId
+                  ? null
+                  : () {
+                      alertDialog(
+                          title: dd.asset ?? '-',
+                          body: DefaultAssetView(
+                              twinned: UserSession.twin,
+                              authToken: UserSession().getAuthToken(),
+                              assetId: dd.assetId!,
+                              onAssetDoubleTapped: (dd) async {},
+                              onAssetAnalyticsTapped: (data) async {}));
+                    },
+              child: Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    dd.asset ?? '-',
+                    style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  if (dd.trends!.isNotEmpty || dd.series!.isNotEmpty)
+                    InkWell(
+                        onTap: () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DeviceAnalyticsPage(
+                                        data: dd,
+                                      )));
+                        },
+                        child: const Icon(Icons.bar_chart))
+                ],
               ),
             ),
-            divider(),
-            DeviceComponentView(
-                twinned: UserSession.twin,
-                authToken: UserSession().getAuthToken(),
-                deviceData: dd),
           ],
         )),
         DataCell(Wrap(
           spacing: 4.0,
           children: [
-            Wrap(
-              children: [
-                Tooltip(
-                  message: 'Device Serial#',
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeviceHistoryPage(
-                                  deviceName: dd.deviceName ?? '-',
-                                  deviceId: dd.deviceId,
-                                  modelId: dd.modelId,
-                                  adminMode: false,
-                                )),
-                      );
-                    },
-                    child: Text(
-                      dd.hardwareDeviceId,
-                      style: const TextStyle(
-                          color: Colors.blue,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
-                    ),
-                  ),
+            Tooltip(
+              message: 'Device Serial#',
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DeviceHistoryPage(
+                              deviceName: dd.deviceName ?? '-',
+                              deviceId: dd.deviceId,
+                              modelId: dd.modelId,
+                              adminMode: false,
+                            )),
+                  );
+                },
+                child: Text(
+                  dd.hardwareDeviceId,
+                  style: const TextStyle(
+                      color: Colors.blue,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
                 ),
-              ],
+              ),
             ),
             if (dd.hardwareDeviceId != dd.deviceName)
               Tooltip(
@@ -326,18 +374,25 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
               ),
             Tooltip(
               message: 'Device Model',
-              child: Text(
-                dd.modelName ?? '-',
-                style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 14),
-              ),
-            ),
-            Tooltip(
-              message: 'Description',
-              child: Text(
-                dd.modelDescription ?? '-',
-                style: const TextStyle(
-                    overflow: TextOverflow.ellipsis, fontSize: 14),
+              child: InkWell(
+                onTap: widget.filterType == FilterType.model
+                    ? null
+                    : () async {
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DeviceModelGridPage(
+                                    title: '${dd.modelName} - Assets',
+                                    child: DataGridSnippet(
+                                      filterType: FilterType.model,
+                                      modelId: dd.modelId,
+                                    ))));
+                      },
+                child: Text(
+                  dd.modelName ?? '-',
+                  style: const TextStyle(
+                      overflow: TextOverflow.ellipsis, fontSize: 14),
+                ),
               ),
             ),
           ],
@@ -367,7 +422,6 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            divider(),
             Tooltip(
               message: 'Facility',
               child: Text(
@@ -375,7 +429,6 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                 style: const TextStyle(overflow: TextOverflow.ellipsis),
               ),
             ),
-            divider(),
             Tooltip(
               message: 'Floor',
               child: Text(
@@ -385,6 +438,19 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             ),
           ],
         )),
+        if (dd.alarms.isNotEmpty ||
+            dd.displays.isNotEmpty ||
+            dd.controls!.isNotEmpty)
+          DataCell(
+            DeviceComponentView(
+                twinned: UserSession.twin,
+                authToken: UserSession().getAuthToken(),
+                deviceData: dd),
+          ),
+        if (dd.alarms.isEmpty && dd.displays.isEmpty && dd.controls!.isEmpty)
+          const DataCell(
+            Text(''),
+          ),
         DataCell(Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
           child: SingleChildScrollView(
