@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:nocode_commons/core/base_state.dart';
 import 'package:nocode_commons/util/nocode_utils.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:nocode_commons/widgets/device_component.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:nocode_commons/core/user_session.dart';
@@ -90,7 +91,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             Icon(Icons.castle),
             Text(
               'Asset',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
@@ -103,7 +104,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             Icon(Icons.blur_on_sharp),
             Text(
               'Device',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
@@ -116,7 +117,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             Icon(Icons.access_time),
             Text(
               'Last Reported',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
@@ -129,7 +130,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             Icon(Icons.location_pin),
             Text(
               'Location',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
@@ -143,7 +144,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
               Icon(Icons.menu),
               Text(
                 'Sensor Data',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ],
           )),
@@ -204,16 +205,25 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       }
 
       rows.add(DataRow2(cells: [
-        DataCell(InkWell(
-          onTap: () {},
-          child: Text(
-            dd.asset ?? '-',
-            style: const TextStyle(
-                fontSize: 14,
-                color: Colors.blue,
-                overflow: TextOverflow.ellipsis,
-                fontWeight: FontWeight.bold),
-          ),
+        DataCell(Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              child: Text(
+                dd.asset ?? '-',
+                style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.blue,
+                    overflow: TextOverflow.ellipsis,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            divider(),
+            DeviceComponentView(
+                twinned: UserSession.twin,
+                authToken: UserSession().getAuthToken(),
+                deviceData: dd),
+          ],
         )),
         DataCell(Wrap(
           spacing: 4.0,
@@ -247,6 +257,15 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                 ),
               ],
             ),
+            if (dd.hardwareDeviceId != dd.deviceName)
+              Tooltip(
+                message: 'Device Name',
+                child: Text(
+                  dd.deviceName ?? '-',
+                  style: const TextStyle(
+                      overflow: TextOverflow.ellipsis, fontSize: 14),
+                ),
+              ),
             Tooltip(
               message: 'Device Model',
               child: Text(

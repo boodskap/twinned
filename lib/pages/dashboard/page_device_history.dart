@@ -74,30 +74,37 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
 
     var list = [
       const Expanded(
-        child: Text(
-          'Last Reported',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        child: Wrap(
+          spacing: 4.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Icon(Icons.access_time),
+            Text(
+              'Last Reported',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
         ),
       ),
       if (widget.adminMode)
         const Expanded(
           child: Text(
             'Proc Speed',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
       if (widget.adminMode)
         const Expanded(
           child: Text(
             'Events',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
       if (widget.adminMode)
         const Expanded(
           child: Text(
             'Triggers',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
     ];
@@ -195,7 +202,8 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                   NoCodeUtils.getParameterLabel(p, deviceModel!),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.ellipsis),
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 18),
                 ),
               ),
             );
@@ -256,6 +264,8 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> children = _buildTableRows();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1F65AD),
@@ -285,7 +295,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 150,
+            height: 100,
             child: bannerImage,
           ),
           Expanded(
@@ -371,7 +381,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _buildTableRows().length,
+                    itemCount: children.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
                         decoration: const BoxDecoration(
@@ -383,7 +393,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                           ),
                         ),
                         padding: const EdgeInsets.all(8),
-                        child: _buildTableRows()[index],
+                        child: children[index],
                       );
                     },
                   ),
@@ -494,7 +504,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
             child: Row(
               children: [
                 Text(
-                  dynValue.toString(),
+                  '${dynValue.toString()} ${NoCodeUtils.getParameterUnit(dataColumns[i], deviceModel!)}',
                   style: const TextStyle(overflow: TextOverflow.ellipsis),
                 ),
               ],
@@ -509,7 +519,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
         ),
         children: [
           SizedBox(
-            height: 500,
+            height: 300,
             width: MediaQuery.of(context).size.width,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -518,8 +528,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                 Expanded(
                   flex: 4,
                   child: SizedBox(
-                    height: double.maxFinite,
-                    // color: Colors.red,
+                    height: 300,
                     child: Center(
                       child: DefaultDeviceView(
                         deviceId: data.deviceId,

@@ -89,9 +89,10 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
     await execute(() async {
       _data.clear();
       var ddRes = await UserSession.twin.filterRecentDeviceData(
-        apikey: UserSession().getAuthToken(),
-        filterId: widget.filter!.id,
-      );
+          apikey: UserSession().getAuthToken(),
+          filterId: widget.filter!.id,
+          page: 0,
+          size: 10000);
       if (validateResponse(ddRes, shouldAlert: false)) {
         setState(() {
           viewType = AssetViewType.grid;
@@ -312,7 +313,10 @@ class _AssetDataGridViewState extends BaseState<AssetDataGridView> {
         }
       } else {
         var dRes = await UserSession.twin.filterRecentDeviceData(
-            apikey: UserSession().getAuthToken(), filterId: widget.filter!.id);
+            apikey: UserSession().getAuthToken(),
+            filterId: widget.filter!.id,
+            page: 0,
+            size: 10000);
         if (validateResponse(dRes)) {
           List<DeviceData> data = [];
           data.addAll(dRes.body!.values!);
