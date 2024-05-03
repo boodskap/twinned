@@ -47,8 +47,6 @@ class _MyHomePageState extends BaseState<MyHomePage> {
       GlobalKey<ConvexAppBarState>();
   final int _subIndex = 0;
   List<dynamic>? menuData;
-  final List<DataFilter> _filters = [];
-  final List<Report> _reports = [];
   String appVersion = '';
   String appBuildNumber = '';
 
@@ -60,22 +58,6 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         appVersion = packageInfo.version;
         appBuildNumber = packageInfo.buildNumber;
       });
-      var res = await UserSession.twin.listDataFilters(
-          apikey: UserSession().getAuthToken(),
-          body: const ListReq(page: 0, size: 10000));
-      if (validateResponse(res)) {
-        setState(() {
-          _filters.addAll(res.body!.values!);
-        });
-      }
-      var rRes = await UserSession.twin.listReports(
-          apikey: UserSession().getAuthToken(),
-          body: const ListReq(page: 0, size: 10000));
-      if (validateResponse(rRes)) {
-        setState(() {
-          _reports.addAll(rRes.body!.values!);
-        });
-      }
     });
   }
 
@@ -281,36 +263,34 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                   Navigator.pop(context);
                 },
               ),
-              if (_filters.isNotEmpty)
-                ListTile(
-                  leading: const Icon(Icons.filter_alt_sharp),
-                  title: const Text(
-                    'Filters',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+              ListTile(
+                leading: const Icon(Icons.filter_alt_sharp),
+                title: const Text(
+                  'Filters',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  selected: _selectedIndex == SelectedPage.myFilters,
-                  onTap: () {
-                    _onItemTapped(SelectedPage.myFilters);
-                    Navigator.pop(context);
-                  },
                 ),
-              if (_reports.isNotEmpty)
-                ListTile(
-                  leading: const Icon(Icons.menu_book),
-                  title: const Text(
-                    'Reports',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                selected: _selectedIndex == SelectedPage.myFilters,
+                onTap: () {
+                  _onItemTapped(SelectedPage.myFilters);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.menu_book),
+                title: const Text(
+                  'Reports',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  selected: _selectedIndex == SelectedPage.myReports,
-                  onTap: () {
-                    _onItemTapped(SelectedPage.myReports);
-                    Navigator.pop(context);
-                  },
                 ),
+                selected: _selectedIndex == SelectedPage.myReports,
+                onTap: () {
+                  _onItemTapped(SelectedPage.myReports);
+                  Navigator.pop(context);
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.notifications),
                 title: const Text(

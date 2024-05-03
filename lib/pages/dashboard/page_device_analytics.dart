@@ -151,7 +151,7 @@ class _DeviceAnalyticsPageState extends BaseState<DeviceAnalyticsPage> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 150,
+            height: 100,
             child: _bannerImage,
           ),
           divider(),

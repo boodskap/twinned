@@ -329,6 +329,7 @@ class _DevicesPageState extends BaseState<DevicesPage>
                     // color: Colors.red,
                     child: Center(
                       child: DefaultDeviceView(
+                        deviceData: data,
                         deviceId: data.deviceId,
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
