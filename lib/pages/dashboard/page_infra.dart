@@ -911,12 +911,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
             NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
         if (type == widgets.SensorWidgetType.none) {
           String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
-          children.add(Wrap(
-            spacing: 4.0,
-            direction: Axis.vertical,
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
+          children.add(Column(
             children: [
               Text(
                 NoCodeUtils.getParameterLabel(field, deviceModel),
@@ -925,11 +920,13 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
+              if (iconId.isNotEmpty) divider(),
               if (iconId.isNotEmpty)
                 SizedBox(
-                    width: 48,
-                    height: 48,
+                    width: 28,
+                    height: 28,
                     child: UserSession().getImage(dd.domainKey, iconId)),
+              divider(),
               Text(
                 '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
                 style: const TextStyle(
@@ -939,6 +936,7 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
               ),
             ],
           ));
+          children.add(divider(horizontal: true, width: 24));
         } else {
           Parameter? parameter =
               NoCodeUtils.getParameter(field, _models[dd.modelId]!);
@@ -1059,10 +1057,14 @@ class _InfraGridViewState extends BaseState<_InfraGridView> {
             ),
           ],
         )),
-        DataCell(Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
+        DataCell(Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: children,
+            ),
+          ),
         )),
       ]));
     }
