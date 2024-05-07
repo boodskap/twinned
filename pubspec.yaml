@@ -20,12 +20,6 @@ dependencies:
 #    path:
 #      nocode_commons
 
-  twinned_widgets:
-    git:
-      url: https://github.com/boodskap/twinned_widgets.git
-#    path:
-#      twinned_widgets
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

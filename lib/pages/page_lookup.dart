@@ -55,53 +55,7 @@ class _TwinnedLookupPageState extends BaseState<TwinnedLookupPage> {
                       vertical: 3.5, horizontal: 7.5),
                   sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
                   sectionClosingHapticFeedback: SectionHapticFeedback.light,
-                  children: [
-                    AccordionSection(
-                        isOpen: true,
-                        headerBackgroundColorOpened: openColor,
-                        headerBackgroundColor: closeColor,
-                        leftIcon: Icon(
-                          Icons.developer_board_rounded,
-                          color: UserSession.getIconColor(),
-                          size: UserSession.getIconSize(),
-                        ),
-                        header: Text('Device Library', style: style),
-                        content: const SizedBox(
-                            height: 250,
-                            child: TwinModel(
-                              controlType: ComponentType.deviceModel,
-                            ))),
-                            AccordionSection(
-                        isOpen: false,
-                        headerBackgroundColorOpened: openColor,
-                        headerBackgroundColor: closeColor,
-                        leftIcon: Icon(
-                          Icons.departure_board_rounded,
-                          color: UserSession.getIconColor(),
-                          size: UserSession.getIconSize(),
-                        ),
-                        header: Text('Asset Library', style: style),
-                        content: const SizedBox(
-                            height: 250,
-                            child: TwinModel(
-                              controlType: ComponentType.assetModel,
-                            ))),
-                    AccordionSection(
-                        isOpen: false,
-                        headerBackgroundColorOpened: openColor,
-                        headerBackgroundColor: closeColor,
-                        leftIcon: Icon(
-                          Icons.memory_rounded,
-                          color: UserSession.getIconColor(),
-                          size: UserSession.getIconSize(),
-                        ),
-                        header: Text('Installation Database', style: style),
-                        content: const SizedBox(
-                            height: 250,
-                            child: TwinModel(
-                              controlType: ComponentType.device,
-                            ))),
-                  ],
+                  children: [],
                 );
               }),
         ),
