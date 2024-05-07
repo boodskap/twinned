@@ -9,6 +9,7 @@ import 'package:nocode_commons/widgets/default_assetview.dart';
 import 'package:nocode_commons/widgets/device_component.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/dashboard/page_modelgrid.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:nocode_commons/core/user_session.dart';
@@ -221,7 +222,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           ],
         ),
       ),
-      DataColumn2(
+      const DataColumn2(
         //fixedWidth: 400,
         label: Wrap(
           spacing: 4.0,
@@ -246,33 +247,62 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       for (String field in fields) {
         widgets.SensorWidgetType type =
             NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
+        bool hasSeries = NoCodeUtils.hasTimeSeries(field, deviceModel);
         if (type == widgets.SensorWidgetType.none) {
           String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
           _padding(children);
-          children.add(Column(
-            children: [
-              Text(
-                NoCodeUtils.getParameterLabel(field, deviceModel),
-                style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
+          children.add(InkWell(
+            onTap: !hasSeries
+                ? null
+                : () async {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FieldAnalyticsPage(
+                                  field: field,
+                                  deviceModel: deviceModel,
+                                  deviceData: dd,
+                                )));
+                  },
+            child: InkWell(
+              onTap: !hasSeries
+                  ? null
+                  : () async {
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FieldAnalyticsPage(
+                                    field: field,
+                                    deviceModel: deviceModel,
+                                    deviceData: dd,
+                                  )));
+                    },
+              child: Column(
+                children: [
+                  Text(
+                    NoCodeUtils.getParameterLabel(field, deviceModel),
+                    style: const TextStyle(
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  if (iconId.isNotEmpty) divider(),
+                  if (iconId.isNotEmpty)
+                    SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: UserSession().getImage(dd.domainKey, iconId)),
+                  divider(),
+                  Text(
+                    '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
+                    style: const TextStyle(
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              if (iconId.isNotEmpty) divider(),
-              if (iconId.isNotEmpty)
-                SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: UserSession().getImage(dd.domainKey, iconId)),
-              divider(),
-              Text(
-                '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
-                style: const TextStyle(
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
+            ),
           ));
           children.add(divider(horizontal: true, width: 24));
         } else {
@@ -314,7 +344,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                   Text(
                     dd.asset ?? '-',
                     style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: Colors.blue,
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold),
@@ -359,7 +389,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                       color: Colors.blue,
                       overflow: TextOverflow.ellipsis,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                      fontSize: 16),
                 ),
               ),
             ),
@@ -369,7 +399,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                 child: Text(
                   dd.deviceName ?? '-',
                   style: const TextStyle(
-                      overflow: TextOverflow.ellipsis, fontSize: 14),
+                      overflow: TextOverflow.ellipsis, fontSize: 16),
                 ),
               ),
             Tooltip(
@@ -391,7 +421,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                 child: Text(
                   dd.modelName ?? '-',
                   style: const TextStyle(
-                      overflow: TextOverflow.ellipsis, fontSize: 14),
+                      overflow: TextOverflow.ellipsis, fontSize: 16),
                 ),
               ),
             ),
@@ -402,7 +432,10 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           children: [
             Text(
               timeago.format(dT, locale: 'en'),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 16),
             ),
             Text(
               dT.toString(),
@@ -417,7 +450,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
               child: Text(
                 dd.premise ?? '',
                 style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     overflow: TextOverflow.ellipsis,
                     fontWeight: FontWeight.bold),
               ),
