@@ -349,17 +349,6 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold),
                   ),
-                  if (dd.trends!.isNotEmpty || dd.series!.isNotEmpty)
-                    InkWell(
-                        onTap: () async {
-                          await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DeviceAnalyticsPage(
-                                        data: dd,
-                                      )));
-                        },
-                        child: const Icon(Icons.bar_chart))
                 ],
               ),
             ),
