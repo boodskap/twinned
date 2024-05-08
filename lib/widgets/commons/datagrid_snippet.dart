@@ -7,7 +7,6 @@ import 'package:nocode_commons/util/nocode_utils.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:nocode_commons/widgets/default_assetview.dart';
 import 'package:nocode_commons/widgets/device_component.dart';
-import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/dashboard/page_modelgrid.dart';
@@ -15,7 +14,7 @@ import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:nocode_commons/core/user_session.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:data_table_2/data_table_2.dart';
-import 'package:twinned_widgets/twinned_widgets.dart' as widgets;
+import 'package:nocode_commons/twinned_widgets.dart' as widgets;
 import 'package:chopper/chopper.dart' as chopper;
 
 enum FilterType { none, data, field, group, model }
