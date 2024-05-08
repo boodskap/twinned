@@ -14,11 +14,17 @@ import 'pages/page_contact.dart';
 //import 'package:twinned/design.dart';
 
 Future main() async {
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => StateProvider())],
-      child: TwinnedApp(
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      debugShowMaterialGrid: false,
+      home: TwinnedApp(
         key: Key(const Uuid().v4()),
       )));
+  // runApp(MultiProvider(
+  //     providers: [ChangeNotifierProvider(create: (context) => StateProvider())],
+  //     child: TwinnedApp(
+  //       key: Key(const Uuid().v4()),
+  //     )));
 }
 
 class TwinnedApp extends StatefulWidget {
@@ -45,13 +51,21 @@ class _TwinnedAppState extends BaseState<TwinnedApp> {
         debugPrint = (String? message, {int? wrapWidth}) => '';
       }
       var res = await UserSession.twin.getTwinSysInfo(domainKey: domainKey);
+      bool isValid = false;
 
-      if (validateResponse(res)) {
-        setState(() {
-          twinSysInfo = res.body!.entity;
-        });
-        debugPrint(twinSysInfo.toString());
+      isValid = validateResponse(res);
+
+      if (!isValid) {
+        domainKey = defaultDomainKey;
+        res = await UserSession.twin.getTwinSysInfo(domainKey: domainKey);
+        isValid = validateResponse(res);
       }
+
+      debugPrint(twinSysInfo.toString());
+
+      refresh(sync: () {
+        twinSysInfo = res.body!.entity;
+      });
     });
   }
 
