@@ -45,6 +45,33 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
     load();
   }
 
+  void showAnalytics(
+      {required bool asPopup,
+      required List<String> fields,
+      required DeviceModel deviceModel,
+      required DeviceData dd}) {
+    if (asPopup) {
+      alertDialog(
+          title: '',
+          width: MediaQuery.of(context).size.width - 100,
+          body: FieldAnalyticsPage(
+            fields: fields,
+            deviceModel: deviceModel,
+            deviceData: dd,
+            asPopup: asPopup,
+          ));
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FieldAnalyticsPage(
+                    fields: fields,
+                    deviceModel: deviceModel,
+                    deviceData: dd,
+                  )));
+    }
+  }
+
   Future load({String search = '*', int page = 0, int size = 1000}) async {
     if (loading) return;
     loading = true;
@@ -256,15 +283,21 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           children.add(InkWell(
             onTap: !hasSeries
                 ? null
-                : () async {
-                    await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FieldAnalyticsPage(
-                                  fields: [field],
-                                  deviceModel: deviceModel,
-                                  deviceData: dd,
-                                )));
+                : () {
+                    showAnalytics(
+                        asPopup: true,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
+                  },
+            onDoubleTap: !hasSeries
+                ? null
+                : () {
+                    showAnalytics(
+                        asPopup: false,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
                   },
             child: Column(
               children: [
@@ -339,16 +372,11 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                               onAssetDoubleTapped: (dd) async {},
                               onAssetAnalyticsTapped:
                                   (field, deviceModel, dd) async {
-                                //Navigator.pop(context);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            FieldAnalyticsPage(
-                                              fields: [field],
-                                              deviceModel: deviceModel,
-                                              deviceData: dd,
-                                            )));
+                                showAnalytics(
+                                    asPopup: true,
+                                    fields: [field],
+                                    deviceModel: deviceModel,
+                                    dd: dd);
                               }));
                     },
               child: Wrap(
@@ -364,18 +392,22 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         fontWeight: FontWeight.bold),
                   ),
                   if (timeSeriesFields.isNotEmpty)
-                    IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FieldAnalyticsPage(
-                                        fields: timeSeriesFields,
-                                        deviceModel: deviceModel,
-                                        deviceData: dd,
-                                      )));
+                    InkWell(
+                        onTap: () {
+                          showAnalytics(
+                              asPopup: true,
+                              fields: timeSeriesFields,
+                              deviceModel: deviceModel,
+                              dd: dd);
                         },
-                        icon: const Icon(Icons.bar_chart))
+                        onDoubleTap: () {
+                          showAnalytics(
+                              asPopup: false,
+                              fields: timeSeriesFields,
+                              deviceModel: deviceModel,
+                              dd: dd);
+                        },
+                        child: const Icon(Icons.bar_chart))
                 ],
               ),
             ),

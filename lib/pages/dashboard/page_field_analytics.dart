@@ -13,12 +13,14 @@ class FieldAnalyticsPage extends StatefulWidget {
   final List<String> fields;
   final twin.DeviceData deviceData;
   final twin.DeviceModel deviceModel;
-
-  const FieldAnalyticsPage(
-      {super.key,
-      required this.fields,
-      required this.deviceData,
-      required this.deviceModel});
+  final bool asPopup;
+  const FieldAnalyticsPage({
+    super.key,
+    required this.fields,
+    required this.deviceData,
+    required this.deviceModel,
+    this.asPopup = false,
+  });
 
   @override
   State<FieldAnalyticsPage> createState() => _FieldAnalyticsPageState();
@@ -62,23 +64,25 @@ class _FieldAnalyticsPageState extends BaseState<FieldAnalyticsPage> {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.logout,
-              color: Color(0XFFFFFFFF),
+          if (!widget.asPopup)
+            IconButton(
+              icon: const Icon(
+                Icons.logout,
+                color: Color(0XFFFFFFFF),
+              ),
+              onPressed: () {
+                UI().logout(context);
+              },
             ),
-            onPressed: () {
-              UI().logout(context);
-            },
-          ),
         ],
       ),
       body: Column(
         children: [
-          SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 100.0,
-              child: _bannerImage),
+          if (!widget.asPopup)
+            SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 100.0,
+                child: _bannerImage),
           Expanded(
             child: DeviceFieldAnalytics(
               twinned: UserSession.twin,
