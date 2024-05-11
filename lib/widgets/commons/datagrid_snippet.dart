@@ -263,59 +263,59 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                                   deviceData: dd,
                                 )));
                   },
-            child: InkWell(
-              onTap: !hasSeries
-                  ? null
-                  : () async {
-                      await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FieldAnalyticsPage(
-                                    field: field,
-                                    deviceModel: deviceModel,
-                                    deviceData: dd,
-                                  )));
-                    },
-              child: Column(
-                children: [
-                  Text(
-                    NoCodeUtils.getParameterLabel(field, deviceModel),
-                    style: const TextStyle(
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  if (iconId.isNotEmpty) divider(),
-                  if (iconId.isNotEmpty)
-                    SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: UserSession().getImage(dd.domainKey, iconId)),
-                  divider(),
-                  Text(
-                    '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
-                    style: const TextStyle(
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                Text(
+                  NoCodeUtils.getParameterLabel(field, deviceModel),
+                  style: const TextStyle(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold),
+                ),
+                if (iconId.isNotEmpty) divider(),
+                if (iconId.isNotEmpty)
+                  SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: UserSession().getImage(dd.domainKey, iconId)),
+                divider(),
+                Text(
+                  '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ));
           children.add(divider(horizontal: true, width: 24));
         } else {
           Parameter? parameter =
               NoCodeUtils.getParameter(field, _models[dd.modelId]!);
-          children.add(ConstrainedBox(
-              constraints: const BoxConstraints(
-                  minWidth: 80, minHeight: 160, maxWidth: 80, maxHeight: 160),
-              child: widgets.SensorWidget(
-                parameter: parameter!,
-                deviceData: dd,
-                deviceModel: deviceModel,
-                tiny: true,
-              )));
+          children.add(InkWell(
+            onTap: !hasSeries
+                ? null
+                : () async {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FieldAnalyticsPage(
+                                  field: field,
+                                  deviceModel: deviceModel,
+                                  deviceData: dd,
+                                )));
+                  },
+            child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                    minWidth: 80, minHeight: 160, maxWidth: 80, maxHeight: 160),
+                child: widgets.SensorWidget(
+                  parameter: parameter!,
+                  deviceData: dd,
+                  deviceModel: deviceModel,
+                  tiny: true,
+                )),
+          ));
         }
       }
 
