@@ -1,4 +1,4 @@
-DEVELOPMENT=false
+DEVELOPMENT=true
 DEBUG=true
 
 #Production settings
