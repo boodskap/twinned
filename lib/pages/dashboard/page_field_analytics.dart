@@ -10,15 +10,17 @@ import 'package:nocode_commons/widgets/common/layout.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 
 class FieldAnalyticsPage extends StatefulWidget {
-  final String field;
+  final List<String> fields;
   final twin.DeviceData deviceData;
   final twin.DeviceModel deviceModel;
-
-  const FieldAnalyticsPage(
-      {super.key,
-      required this.field,
-      required this.deviceData,
-      required this.deviceModel});
+  final bool asPopup;
+  const FieldAnalyticsPage({
+    super.key,
+    required this.fields,
+    required this.deviceData,
+    required this.deviceModel,
+    this.asPopup = false,
+  });
 
   @override
   State<FieldAnalyticsPage> createState() => _FieldAnalyticsPageState();
@@ -41,6 +43,13 @@ class _FieldAnalyticsPageState extends BaseState<FieldAnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String title;
+    if (widget.fields.length > 1) {
+      title = '${widget.deviceData.asset} - Time Series';
+    } else {
+      title =
+          '${widget.deviceData.asset} - ${NoCodeUtils.getParameterLabel(widget.fields[0], widget.deviceModel)} (${NoCodeUtils.getParameterUnit(widget.fields[0], widget.deviceModel)}) - Time Series';
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1F65AD),
@@ -49,36 +58,38 @@ class _FieldAnalyticsPageState extends BaseState<FieldAnalyticsPage> {
           color: Color(0XFFFFFFFF),
         ),
         title: Text(
-          '${widget.deviceData.asset} - ${NoCodeUtils.getParameterLabel(widget.field, widget.deviceModel)} (${NoCodeUtils.getParameterUnit(widget.field, widget.deviceModel)}) - Time Series',
+          title,
           style: const TextStyle(
             color: Color(0XFFFFFFFF),
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.logout,
-              color: Color(0XFFFFFFFF),
+          if (!widget.asPopup)
+            IconButton(
+              icon: const Icon(
+                Icons.logout,
+                color: Color(0XFFFFFFFF),
+              ),
+              onPressed: () {
+                UI().logout(context);
+              },
             ),
-            onPressed: () {
-              UI().logout(context);
-            },
-          ),
         ],
       ),
       body: Column(
         children: [
-          SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 100.0,
-              child: _bannerImage),
+          if (!widget.asPopup)
+            SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 100.0,
+                child: _bannerImage),
           Expanded(
             child: DeviceFieldAnalytics(
               twinned: UserSession.twin,
               apiKey: UserSession().getAuthToken(),
               deviceModel: widget.deviceModel,
               deviceData: widget.deviceData,
-              field: widget.field,
+              fields: widget.fields,
             ),
           ),
         ],

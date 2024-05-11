@@ -45,6 +45,33 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
     load();
   }
 
+  void showAnalytics(
+      {required bool asPopup,
+      required List<String> fields,
+      required DeviceModel deviceModel,
+      required DeviceData dd}) {
+    if (asPopup) {
+      alertDialog(
+          title: '',
+          width: MediaQuery.of(context).size.width - 100,
+          body: FieldAnalyticsPage(
+            fields: fields,
+            deviceModel: deviceModel,
+            deviceData: dd,
+            asPopup: asPopup,
+          ));
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FieldAnalyticsPage(
+                    fields: fields,
+                    deviceModel: deviceModel,
+                    deviceData: dd,
+                  )));
+    }
+  }
+
   Future load({String search = '*', int page = 0, int size = 1000}) async {
     if (loading) return;
     loading = true;
@@ -243,13 +270,65 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
       DeviceModel deviceModel = _models[dd.modelId]!;
       List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
+      List<String> timeSeriesFields =
+          NoCodeUtils.getTimeSeriesFields(deviceModel);
+
       for (String field in fields) {
         widgets.SensorWidgetType type =
             NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
-        bool hasSeries = NoCodeUtils.hasTimeSeries(field, deviceModel);
+        bool hasSeries = timeSeriesFields.contains(field);
         if (type == widgets.SensorWidgetType.none) {
           String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
           _padding(children);
+          children.add(InkWell(
+            onTap: !hasSeries
+                ? null
+                : () {
+                    showAnalytics(
+                        asPopup: true,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
+                  },
+            onDoubleTap: !hasSeries
+                ? null
+                : () {
+                    showAnalytics(
+                        asPopup: false,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
+                  },
+            child: Column(
+              children: [
+                Text(
+                  NoCodeUtils.getParameterLabel(field, deviceModel),
+                  style: const TextStyle(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold),
+                ),
+                if (iconId.isNotEmpty) divider(),
+                if (iconId.isNotEmpty)
+                  SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: UserSession().getImage(dd.domainKey, iconId)),
+                divider(),
+                Text(
+                  '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ));
+          children.add(divider(horizontal: true, width: 24));
+        } else {
+          Parameter? parameter =
+              NoCodeUtils.getParameter(field, _models[dd.modelId]!);
           children.add(InkWell(
             onTap: !hasSeries
                 ? null
@@ -258,64 +337,21 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => FieldAnalyticsPage(
-                                  field: field,
+                                  fields: [field],
                                   deviceModel: deviceModel,
                                   deviceData: dd,
                                 )));
                   },
-            child: InkWell(
-              onTap: !hasSeries
-                  ? null
-                  : () async {
-                      await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FieldAnalyticsPage(
-                                    field: field,
-                                    deviceModel: deviceModel,
-                                    deviceData: dd,
-                                  )));
-                    },
-              child: Column(
-                children: [
-                  Text(
-                    NoCodeUtils.getParameterLabel(field, deviceModel),
-                    style: const TextStyle(
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  if (iconId.isNotEmpty) divider(),
-                  if (iconId.isNotEmpty)
-                    SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: UserSession().getImage(dd.domainKey, iconId)),
-                  divider(),
-                  Text(
-                    '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
-                    style: const TextStyle(
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
+            child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                    minWidth: 80, minHeight: 160, maxWidth: 80, maxHeight: 160),
+                child: widgets.SensorWidget(
+                  parameter: parameter!,
+                  deviceData: dd,
+                  deviceModel: deviceModel,
+                  tiny: true,
+                )),
           ));
-          children.add(divider(horizontal: true, width: 24));
-        } else {
-          Parameter? parameter =
-              NoCodeUtils.getParameter(field, _models[dd.modelId]!);
-          children.add(ConstrainedBox(
-              constraints: const BoxConstraints(
-                  minWidth: 80, minHeight: 160, maxWidth: 80, maxHeight: 160),
-              child: widgets.SensorWidget(
-                parameter: parameter!,
-                deviceData: dd,
-                deviceModel: deviceModel,
-                tiny: true,
-              )));
         }
       }
 
@@ -326,7 +362,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             InkWell(
               onTap: null == dd.assetId
                   ? null
-                  : () {
+                  : () async {
                       alertDialog(
                           title: dd.asset ?? '-',
                           body: DefaultAssetView(
@@ -334,7 +370,14 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                               authToken: UserSession().getAuthToken(),
                               assetId: dd.assetId!,
                               onAssetDoubleTapped: (dd) async {},
-                              onAssetAnalyticsTapped: (data) async {}));
+                              onAssetAnalyticsTapped:
+                                  (field, deviceModel, dd) async {
+                                showAnalytics(
+                                    asPopup: true,
+                                    fields: [field],
+                                    deviceModel: deviceModel,
+                                    dd: dd);
+                              }));
                     },
               child: Wrap(
                 spacing: 4,
@@ -348,6 +391,23 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold),
                   ),
+                  if (timeSeriesFields.isNotEmpty)
+                    InkWell(
+                        onTap: () {
+                          showAnalytics(
+                              asPopup: true,
+                              fields: timeSeriesFields,
+                              deviceModel: deviceModel,
+                              dd: dd);
+                        },
+                        onDoubleTap: () {
+                          showAnalytics(
+                              asPopup: false,
+                              fields: timeSeriesFields,
+                              deviceModel: deviceModel,
+                              dd: dd);
+                        },
+                        child: const Icon(Icons.bar_chart))
                 ],
               ),
             ),

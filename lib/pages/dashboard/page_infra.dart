@@ -6,6 +6,7 @@ import 'package:nocode_commons/core/constants.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:nocode_commons/widgets/default_assetview.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/widgets/asset_infra_card.dart';
 import 'package:twinned/pages/widgets/device_infra_card.dart';
 import 'package:twinned/pages/widgets/facility_infra_card.dart';
@@ -790,12 +791,16 @@ class _InfraAssetViewState extends BaseState<_InfraAssetView> {
                 assetId: e,
                 authToken: UserSession().getAuthToken(),
                 onAssetDoubleTapped: (DeviceData data) async {},
-                onAssetAnalyticsTapped: (DeviceData data) async {
+                onAssetAnalyticsTapped: (String field, DeviceModel deviceModel,
+                    DeviceData data) async {
+                  //Navigator.pop(context);
                   await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DeviceAnalyticsPage(
-                                data: data,
+                          builder: (context) => FieldAnalyticsPage(
+                                fields: [field],
+                                deviceModel: deviceModel,
+                                deviceData: data,
                               )));
                 },
               ),

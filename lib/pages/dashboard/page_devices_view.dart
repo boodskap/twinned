@@ -9,6 +9,7 @@ import 'package:nocode_commons/core/user_session.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 
 class DevicesViewPage extends StatefulWidget {
@@ -84,12 +85,14 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
           deviceId: data.deviceId,
           twinned: UserSession.twin,
           authToken: UserSession().getAuthToken(),
-          onDeviceAnalyticsTapped: (dd) async {
+          onDeviceAnalyticsTapped: (field, deviceModel, dd) async {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DeviceAnalyticsPage(
-                          data: data,
+                    builder: (context) => FieldAnalyticsPage(
+                          fields: [field],
+                          deviceModel: deviceModel,
+                          deviceData: dd,
                         )));
           },
           onDeviceDoubleTapped: (dd) {

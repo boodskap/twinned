@@ -12,6 +12,7 @@ import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:twinned/pages/dashboard/page_devices.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 import 'package:eventify/eventify.dart' as event;
 import 'package:intl/intl.dart';
@@ -526,12 +527,15 @@ class _GridViewPageState extends BaseState<GridViewPage>
                         deviceId: data.deviceId,
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
-                        onDeviceAnalyticsTapped: (dd) async {
+                        onDeviceAnalyticsTapped:
+                            (field, deviceModel, dd) async {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => DeviceAnalyticsPage(
-                                        data: data,
+                                  builder: (context) => FieldAnalyticsPage(
+                                        fields: [field],
+                                        deviceModel: deviceModel,
+                                        deviceData: dd,
                                       )));
                         },
                         onDeviceDoubleTapped: (dd) async {
