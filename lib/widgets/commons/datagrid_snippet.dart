@@ -332,15 +332,21 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           children.add(InkWell(
             onTap: !hasSeries
                 ? null
-                : () async {
-                    await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FieldAnalyticsPage(
-                                  fields: [field],
-                                  deviceModel: deviceModel,
-                                  deviceData: dd,
-                                )));
+                : () {
+                    showAnalytics(
+                        asPopup: true,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
+                  },
+            onDoubleTap: !hasSeries
+                ? null
+                : () {
+                    showAnalytics(
+                        asPopup: false,
+                        fields: [field],
+                        deviceModel: deviceModel,
+                        dd: dd);
                   },
             child: ConstrainedBox(
                 constraints: const BoxConstraints(
