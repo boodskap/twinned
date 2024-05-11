@@ -243,10 +243,13 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
       DeviceModel deviceModel = _models[dd.modelId]!;
       List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
+      List<String> timeSeriesFields =
+          NoCodeUtils.getTimeSeriesFields(deviceModel);
+
       for (String field in fields) {
         widgets.SensorWidgetType type =
             NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
-        bool hasSeries = NoCodeUtils.hasTimeSeries(field, deviceModel);
+        bool hasSeries = timeSeriesFields.contains(field);
         if (type == widgets.SensorWidgetType.none) {
           String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
           _padding(children);
@@ -360,6 +363,19 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold),
                   ),
+                  if (timeSeriesFields.isNotEmpty)
+                    IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FieldAnalyticsPage(
+                                        fields: timeSeriesFields,
+                                        deviceModel: deviceModel,
+                                        deviceData: dd,
+                                      )));
+                        },
+                        icon: const Icon(Icons.bar_chart))
                 ],
               ),
             ),
