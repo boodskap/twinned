@@ -798,7 +798,7 @@ class _InfraAssetViewState extends BaseState<_InfraAssetView> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => FieldAnalyticsPage(
-                                field: field,
+                                fields: [field],
                                 deviceModel: deviceModel,
                                 deviceData: data,
                               )));

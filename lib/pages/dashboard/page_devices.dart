@@ -341,7 +341,7 @@ class _DevicesPageState extends BaseState<DevicesPage>
                               context,
                               MaterialPageRoute(
                                   builder: (context) => FieldAnalyticsPage(
-                                        field: field,
+                                        fields: [field],
                                         deviceModel: deviceModel,
                                         deviceData: dd,
                                       )));

@@ -90,7 +90,7 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => FieldAnalyticsPage(
-                          field: field,
+                          fields: [field],
                           deviceModel: deviceModel,
                           deviceData: dd,
                         )));

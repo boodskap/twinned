@@ -258,7 +258,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => FieldAnalyticsPage(
-                                  field: field,
+                                  fields: [field],
                                   deviceModel: deviceModel,
                                   deviceData: dd,
                                 )));
@@ -301,7 +301,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => FieldAnalyticsPage(
-                                  field: field,
+                                  fields: [field],
                                   deviceModel: deviceModel,
                                   deviceData: dd,
                                 )));
@@ -342,7 +342,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             FieldAnalyticsPage(
-                                              field: field,
+                                              fields: [field],
                                               deviceModel: deviceModel,
                                               deviceData: dd,
                                             )));
