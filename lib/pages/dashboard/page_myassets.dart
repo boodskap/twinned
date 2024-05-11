@@ -5,6 +5,7 @@ import 'package:nocode_commons/core/user_session.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/widgets/topbar.dart';
 import 'package:twinned/widgets/commons/datagrid_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
@@ -171,12 +172,15 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
                           )),
                 );
               },
-              onAssetAnalyticsTapped: (DeviceData dd) async {
+              onAssetAnalyticsTapped: (field, deviceModel, dd) async {
+                //Navigator.pop(context);
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DeviceAnalyticsPage(
-                              data: dd,
+                        builder: (context) => FieldAnalyticsPage(
+                              field: field,
+                              deviceModel: deviceModel,
+                              deviceData: dd,
                             )));
               }),
         ),

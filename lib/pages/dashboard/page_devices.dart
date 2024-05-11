@@ -9,6 +9,7 @@ import 'package:nocode_commons/core/user_session.dart';
 import 'package:nocode_commons/widgets/default_deviceview.dart';
 import 'package:nocode_commons/widgets/device_view.dart';
 import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -334,12 +335,15 @@ class _DevicesPageState extends BaseState<DevicesPage>
                         twinned: UserSession.twin,
                         authToken: UserSession().getAuthToken(),
                         onDeviceDoubleTapped: (dd) async {},
-                        onDeviceAnalyticsTapped: (dd) async {
+                        onDeviceAnalyticsTapped:
+                            (field, deviceModel, dd) async {
                           await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => DeviceAnalyticsPage(
-                                        data: data,
+                                  builder: (context) => FieldAnalyticsPage(
+                                        field: field,
+                                        deviceModel: deviceModel,
+                                        deviceData: dd,
                                       )));
                         },
                       ),

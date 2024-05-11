@@ -326,7 +326,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             InkWell(
               onTap: null == dd.assetId
                   ? null
-                  : () {
+                  : () async {
                       alertDialog(
                           title: dd.asset ?? '-',
                           body: DefaultAssetView(
@@ -334,7 +334,19 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                               authToken: UserSession().getAuthToken(),
                               assetId: dd.assetId!,
                               onAssetDoubleTapped: (dd) async {},
-                              onAssetAnalyticsTapped: (data) async {}));
+                              onAssetAnalyticsTapped:
+                                  (field, deviceModel, dd) async {
+                                //Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            FieldAnalyticsPage(
+                                              field: field,
+                                              deviceModel: deviceModel,
+                                              deviceData: dd,
+                                            )));
+                              }));
                     },
               child: Wrap(
                 spacing: 4,
