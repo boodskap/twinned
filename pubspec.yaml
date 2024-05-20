@@ -17,6 +17,7 @@ dependencies:
   nocode_commons:
     git:
       url: https://github.com/boodskap/nocode_commons.git
+      ref: main
 #    path:
 #      nocode_commons
 
