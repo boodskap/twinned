@@ -15,11 +15,11 @@ dependencies:
   package_info_plus: ^7.0.0
 
   twinned_widgets:
-#    git:
-#      url: https://github.com/boodskap/twinned_widgets.git
-#      ref: main
-    path:
-      twinned_widgets
+    git:
+      url: https://github.com/boodskap/twinned_widgets.git
+      ref: main
+#    path:
+#      twinned_widgets
 
 dev_dependencies:
   flutter_test:
