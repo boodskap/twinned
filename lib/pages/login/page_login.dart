@@ -10,6 +10,7 @@ import 'package:twinned/pages/page_home.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:twinned/widgets/commons/password_field.dart';
 import 'package:twinned/widgets/commons/userid_field.dart';
+import 'package:twinned_widgets/twinned_session.dart';
 import 'package:verification_api/api/verification.swagger.dart';
 
 final TextStyle h1 = GoogleFonts.montserrat(
@@ -106,8 +107,6 @@ class _LoginPageState extends BaseState<LoginPage> {
           Constants.putBool("remember.me", false);
         }
 
-        debugPrint('APIKEY: ${UserSession().getAuthToken()}');
-
         var pRes = await UserSession.twin
             .getMyProfile(apikey: UserSession().getAuthToken());
 
@@ -115,6 +114,12 @@ class _LoginPageState extends BaseState<LoginPage> {
           UserSession().twinUser = pRes.body!.entity;
           debugPrint(pRes.body!.entity.toString());
         }
+
+        TwinnedSession.instance.init(
+            debug: debug,
+            host: hostName,
+            authToken: UserSession().getAuthToken(),
+            domainKey: UserSession().twinUser?.domainKey ?? '');
 
         _showHome();
       }
