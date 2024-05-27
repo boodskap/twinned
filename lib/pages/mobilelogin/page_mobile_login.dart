@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nocode_commons/core/base_state.dart';
@@ -9,6 +8,7 @@ import 'package:twinned/pages/page_home.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:twinned/widgets/commons/password_field.dart';
 import 'package:twinned/widgets/commons/userid_field.dart';
+import 'package:twinned_widgets/twinned_session.dart';
 import 'package:verification_api/api/verification.swagger.dart';
 
 final TextStyle h1 = GoogleFonts.montserrat(
@@ -88,6 +88,12 @@ class _LoginMobilePageState extends BaseState<LoginMobilePage> {
           Constants.putString("saved.password", "");
           Constants.putBool("remember.me", false);
         }
+
+        TwinnedSession.instance.init(
+            debug: debug,
+            host: hostName,
+            authToken: UserSession().getAuthToken(),
+            domainKey: UserSession().twinUser?.domainKey ?? '');
 
         if (validateResponse(res)) {
           _showHome();

@@ -19,6 +19,7 @@ import 'package:twinned/pages/page_event.dart';
 import 'package:twinned/pages/page_lookup.dart';
 import 'package:twinned/pages/page_subscriptions.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
+import 'package:twinned_widgets/twinned_dashboard_widget.dart';
 import 'package:uuid/uuid.dart';
 
 class HomePage extends StatelessWidget {
@@ -45,20 +46,35 @@ class _MyHomePageState extends BaseState<MyHomePage> {
   SelectedPage _selectedIndex = SelectedPage.myHome;
   final GlobalKey<ConvexAppBarState> _appBarKey =
       GlobalKey<ConvexAppBarState>();
-  final int _subIndex = 0;
-  List<dynamic>? menuData;
+  final List<DashboardMenuGroup> menuGroups = [];
   String appVersion = '';
   String appBuildNumber = '';
+  DashboardMenuGroup? _selectedGroup;
+  DashboardMenu? _selectedMenu;
 
   @override
-  void setup() async {
-    execute(() async {
+  void setup() {
+    _load();
+  }
+
+  Future _load() async {
+    if (loading) return;
+    loading = true;
+    await execute(() async {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      setState(() {
-        appVersion = packageInfo.version;
-        appBuildNumber = packageInfo.buildNumber;
-      });
+      appVersion = packageInfo.version;
+      appBuildNumber = packageInfo.buildNumber;
+
+      var mgRes = await UserSession.twin.searchDashboardMenuGroups(
+          apikey: UserSession().getAuthToken(),
+          body: const SearchReq(search: '*', page: 0, size: 10000));
+
+      if (validateResponse(mgRes)) {
+        menuGroups.addAll(mgRes.body!.values!);
+      }
     });
+    loading = false;
+    refresh();
   }
 
   Widget _getPageAt(SelectedPage index) {
@@ -121,14 +137,22 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         return TwinnedLookupPage(
           key: Key(const Uuid().v4()),
         );
+      case SelectedPage.myGroup:
+        return TwinnedDashboardWidget(
+          key: Key(const Uuid().v4()),
+          screenId: _selectedMenu!.screenId,
+        );
       default:
         return Text('Page: $index');
     }
   }
 
-  void _onItemTapped(SelectedPage index) {
+  void _onItemTapped(SelectedPage index,
+      {DashboardMenuGroup? group, DashboardMenu? menu}) {
     setState(() {
       _selectedIndex = index;
+      _selectedGroup = group;
+      _selectedMenu = menu;
     });
   }
 
@@ -178,6 +202,10 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         break;
       case SelectedPage.lookup:
         subTitle = 'Lookup Table';
+        break;
+      case SelectedPage.myGroup:
+        subTitle =
+            '${_selectedGroup!.displayName} -> ${_selectedMenu!.displayName}';
         break;
     }
 
@@ -235,6 +263,10 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                 accountName: Text(''),
                 accountEmail: Text(''),
               ),
+              if (menuGroups.isNotEmpty)
+                for (var menu in menuGroups!)
+                  if (menu.menus != null && menu.menus.isNotEmpty)
+                    _buildMenuGroup(context, menu),
               ListTile(
                 leading: const Icon(Icons.home),
                 title: const Text(
@@ -334,12 +366,6 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     Navigator.pop(context);
                   },
                 ),
-              if (menuData != null)
-                for (var menu in menuData!)
-                  if (menu != null &&
-                      menu.menus != null &&
-                      (menu.menus as List).isNotEmpty)
-                    _buildExpansionTile(context, menu),
               if (UserSession().isAdmin())
                 ExpansionTile(
                   leading: const Icon(Icons.dashboard),
@@ -512,14 +538,14 @@ class _MyHomePageState extends BaseState<MyHomePage> {
     );
   }
 
-  Widget _buildExpansionTile(BuildContext context, dynamic menu) {
-    if ((menu.displayName ?? '').isNotEmpty &&
-        menu.menus != null &&
-        (menu.menus as List).isNotEmpty) {
+  Widget _buildMenuGroup(BuildContext context, DashboardMenuGroup menuGroup) {
+    if ((menuGroup.displayName ?? '').isNotEmpty &&
+        menuGroup.menus != null &&
+        (menuGroup.menus as List).isNotEmpty) {
       return ExpansionTile(
-        leading: const Icon(Icons.admin_panel_settings),
+        leading: const Icon(Icons.menu),
         title: Text(
-          menu.displayName ?? '',
+          menuGroup.displayName ?? '',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -527,7 +553,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         onExpansionChanged: (bool isExpanded) {},
         initiallyExpanded: true,
         children: [
-          for (var subMenu in menu.menus as List)
+          for (var subMenu in menuGroup.menus as List)
             if (subMenu != null && (subMenu.displayName ?? '').isNotEmpty)
               ListTile(
                 title: Padding(
@@ -539,8 +565,11 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     ),
                   ),
                 ),
-                selected: _selectedIndex == 1 && _subIndex == 0,
+                selected:
+                    _selectedGroup == menuGroup && _selectedMenu == subMenu,
                 onTap: () {
+                  _onItemTapped(SelectedPage.myGroup,
+                      group: menuGroup, menu: subMenu);
                   Navigator.pop(context);
                 },
               ),
@@ -553,6 +582,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
 }
 
 enum SelectedPage {
+  myGroup,
   myHome,
   myDevices,
   myFilters,
