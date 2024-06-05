@@ -148,7 +148,7 @@ class _InfraPageState extends BaseState<InfraPage> {
           items.add(DropdownMenuItem<DashboardMenu>(
             value: cval,
             child: Text(
-              val.displayName,
+              cval.displayName,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ));
