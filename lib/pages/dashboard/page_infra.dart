@@ -180,6 +180,7 @@ class _InfraPageState extends BaseState<InfraPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => TwinnedDashboardWidget(
+                          popupMode: true,
                           screenId: menu!.screenId,
                         )));
           },
