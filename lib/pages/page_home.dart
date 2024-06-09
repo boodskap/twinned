@@ -21,9 +21,10 @@ import 'package:twinned/pages/page_subscriptions.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:twinned_widgets/twinned_dashboard_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:nocode_commons/core/constants.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class HomePage extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -43,12 +44,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends BaseState<MyHomePage> {
-  SelectedPage _selectedIndex = SelectedPage.myHome;
   final GlobalKey<ConvexAppBarState> _appBarKey =
       GlobalKey<ConvexAppBarState>();
   final List<DashboardMenuGroup> menuGroups = [];
   String appVersion = '';
   String appBuildNumber = '';
+  SelectedPage _selectedPage = SelectedPage.myHome;
   DashboardMenuGroup? _selectedGroup;
   DashboardMenu? _selectedMenu;
 
@@ -71,6 +72,15 @@ class _MyHomePageState extends BaseState<MyHomePage> {
 
       if (validateResponse(mgRes)) {
         menuGroups.addAll(mgRes.body!.values!);
+      }
+
+      if (menuGroups.isNotEmpty && menuGroups.first.menus.isNotEmpty) {
+        if (twinSysInfo?.useMenuAsLanding ?? false) {
+          //TODO make default as false
+          _selectedPage = SelectedPage.myGroup;
+          _selectedGroup = menuGroups.first;
+          _selectedMenu = menuGroups.first.menus.first;
+        }
       }
     });
     loading = false;
@@ -150,7 +160,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
   void _onItemTapped(SelectedPage index,
       {DashboardMenuGroup? group, DashboardMenu? menu}) {
     setState(() {
-      _selectedIndex = index;
+      _selectedPage = index;
       _selectedGroup = group;
       _selectedMenu = menu;
     });
@@ -160,7 +170,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
   Widget build(BuildContext context) {
     final String subTitle;
 
-    switch (_selectedIndex) {
+    switch (_selectedPage) {
       case SelectedPage.myHome:
         subTitle = 'Home';
         break;
@@ -245,7 +255,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
         ],
       ),
       body: Center(
-        child: _getPageAt(_selectedIndex),
+        child: _getPageAt(_selectedPage),
       ),
       drawer: SafeArea(
         child: Drawer(
@@ -275,7 +285,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.myHome,
+                selected: _selectedPage == SelectedPage.myHome,
                 onTap: () {
                   _onItemTapped(SelectedPage.myHome);
                   Navigator.pop(context);
@@ -289,7 +299,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.myDevices,
+                selected: _selectedPage == SelectedPage.myDevices,
                 onTap: () {
                   _onItemTapped(SelectedPage.myDevices);
                   Navigator.pop(context);
@@ -303,7 +313,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.myFilters,
+                selected: _selectedPage == SelectedPage.myFilters,
                 onTap: () {
                   _onItemTapped(SelectedPage.myFilters);
                   Navigator.pop(context);
@@ -317,7 +327,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.myReports,
+                selected: _selectedPage == SelectedPage.myReports,
                 onTap: () {
                   _onItemTapped(SelectedPage.myReports);
                   Navigator.pop(context);
@@ -331,7 +341,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.myEvents,
+                selected: _selectedPage == SelectedPage.myEvents,
                 onTap: () {
                   _onItemTapped(SelectedPage.myEvents);
                   Navigator.pop(context);
@@ -345,7 +355,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                selected: _selectedIndex == SelectedPage.subscription,
+                selected: _selectedPage == SelectedPage.subscription,
                 onTap: () {
                   _onItemTapped(SelectedPage.subscription);
                   Navigator.pop(context);
@@ -360,7 +370,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  selected: _selectedIndex == SelectedPage.myProfile,
+                  selected: _selectedPage == SelectedPage.myProfile,
                   onTap: () {
                     _onItemTapped(SelectedPage.myProfile);
                     Navigator.pop(context);
@@ -388,7 +398,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        selected: _selectedIndex == SelectedPage.adminDevices,
+                        selected: _selectedPage == SelectedPage.adminDevices,
                         onTap: () {
                           _onItemTapped(SelectedPage.adminDevices);
                           Navigator.pop(context);
@@ -405,7 +415,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        selected: _selectedIndex == SelectedPage.adminAnalytics,
+                        selected: _selectedPage == SelectedPage.adminAnalytics,
                         onTap: () {
                           _onItemTapped(SelectedPage.adminAnalytics);
                           Navigator.pop(context);
@@ -422,7 +432,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        selected: _selectedIndex == SelectedPage.adminGridView,
+                        selected: _selectedPage == SelectedPage.adminGridView,
                         onTap: () {
                           _onItemTapped(SelectedPage.adminGridView);
                           Navigator.pop(context);
@@ -439,7 +449,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        selected: _selectedIndex == SelectedPage.mapView,
+                        selected: _selectedPage == SelectedPage.mapView,
                         onTap: () {
                           _onItemTapped(SelectedPage.mapView);
                           Navigator.pop(context);
@@ -454,7 +464,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      selected: _selectedIndex == SelectedPage.lookup,
+                      selected: _selectedPage == SelectedPage.lookup,
                       onTap: () {
                         _onItemTapped(SelectedPage.lookup);
                         Navigator.pop(context);
@@ -481,7 +491,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              selected: _selectedIndex == SelectedPage.roles,
+                              selected: _selectedPage == SelectedPage.roles,
                               onTap: () {
                                 _onItemTapped(SelectedPage.roles);
                                 Navigator.pop(context);
@@ -498,7 +508,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              selected: _selectedIndex == SelectedPage.users,
+                              selected: _selectedPage == SelectedPage.users,
                               onTap: () {
                                 _onItemTapped(SelectedPage.users);
                                 Navigator.pop(context);

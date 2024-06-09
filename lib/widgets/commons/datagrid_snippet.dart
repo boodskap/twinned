@@ -264,290 +264,295 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       ),
     ]);
 
-    for (var dd in _data) {
-      var dT = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
-      List<Widget> children = [];
-      Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
-      DeviceModel deviceModel = _models[dd.modelId]!;
-      List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
-      List<String> timeSeriesFields =
-          NoCodeUtils.getTimeSeriesFields(deviceModel);
+    if (_models.isNotEmpty) {
+      for (var dd in _data) {
+        var dT = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
+        List<Widget> children = [];
+        Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
+        DeviceModel deviceModel = _models[dd.modelId]!;
+        List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
+        List<String> timeSeriesFields =
+            NoCodeUtils.getTimeSeriesFields(deviceModel);
 
-      for (String field in fields) {
-        widgets.SensorWidgetType type =
-            NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
-        bool hasSeries = timeSeriesFields.contains(field);
-        if (type == widgets.SensorWidgetType.none) {
-          String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
-          _padding(children);
-          children.add(InkWell(
-            onTap: !hasSeries
-                ? null
-                : () {
-                    showAnalytics(
-                        asPopup: true,
-                        fields: [field],
-                        deviceModel: deviceModel,
-                        dd: dd);
-                  },
-            onDoubleTap: !hasSeries
-                ? null
-                : () {
-                    showAnalytics(
-                        asPopup: false,
-                        fields: [field],
-                        deviceModel: deviceModel,
-                        dd: dd);
-                  },
-            child: Column(
-              children: [
-                Text(
-                  NoCodeUtils.getParameterLabel(field, deviceModel),
-                  style: const TextStyle(
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                      fontWeight: FontWeight.bold),
-                ),
-                if (iconId.isNotEmpty) divider(),
-                if (iconId.isNotEmpty)
-                  SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: UserSession().getImage(dd.domainKey, iconId)),
-                divider(),
-                Text(
-                  '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
-                  style: const TextStyle(
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ));
-          children.add(divider(horizontal: true, width: 24));
-        } else {
-          Parameter? parameter =
-              NoCodeUtils.getParameter(field, _models[dd.modelId]!);
-          children.add(InkWell(
-            onTap: !hasSeries
-                ? null
-                : () {
-                    showAnalytics(
-                        asPopup: true,
-                        fields: [field],
-                        deviceModel: deviceModel,
-                        dd: dd);
-                  },
-            onDoubleTap: !hasSeries
-                ? null
-                : () {
-                    showAnalytics(
-                        asPopup: false,
-                        fields: [field],
-                        deviceModel: deviceModel,
-                        dd: dd);
-                  },
-            child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                    minWidth: 80, minHeight: 160, maxWidth: 80, maxHeight: 160),
-                child: widgets.SensorWidget(
-                  parameter: parameter!,
-                  deviceData: dd,
-                  deviceModel: deviceModel,
-                  tiny: true,
-                )),
-          ));
-        }
-      }
-
-      rows.add(DataRow2(cells: [
-        DataCell(Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: null == dd.assetId
+        for (String field in fields) {
+          widgets.SensorWidgetType type =
+              NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
+          bool hasSeries = timeSeriesFields.contains(field);
+          if (type == widgets.SensorWidgetType.none) {
+            String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
+            _padding(children);
+            children.add(InkWell(
+              onTap: !hasSeries
                   ? null
-                  : () async {
-                      alertDialog(
-                          title: dd.asset ?? '-',
-                          body: DefaultAssetView(
-                              twinned: UserSession.twin,
-                              authToken: UserSession().getAuthToken(),
-                              assetId: dd.assetId!,
-                              onAssetDoubleTapped: (dd) async {},
-                              onAssetAnalyticsTapped:
-                                  (field, deviceModel, dd) async {
-                                showAnalytics(
-                                    asPopup: true,
-                                    fields: [field],
-                                    deviceModel: deviceModel,
-                                    dd: dd);
-                              }));
+                  : () {
+                      showAnalytics(
+                          asPopup: true,
+                          fields: [field],
+                          deviceModel: deviceModel,
+                          dd: dd);
                     },
-              child: Wrap(
-                spacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              onDoubleTap: !hasSeries
+                  ? null
+                  : () {
+                      showAnalytics(
+                          asPopup: false,
+                          fields: [field],
+                          deviceModel: deviceModel,
+                          dd: dd);
+                    },
+              child: Column(
                 children: [
                   Text(
-                    dd.asset ?? '-',
+                    NoCodeUtils.getParameterLabel(field, deviceModel),
                     style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
+                        fontSize: 14,
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold),
                   ),
-                  if (timeSeriesFields.isNotEmpty)
-                    InkWell(
-                        onTap: () {
-                          showAnalytics(
-                              asPopup: true,
-                              fields: timeSeriesFields,
-                              deviceModel: deviceModel,
-                              dd: dd);
-                        },
-                        onDoubleTap: () {
-                          showAnalytics(
-                              asPopup: false,
-                              fields: timeSeriesFields,
-                              deviceModel: deviceModel,
-                              dd: dd);
-                        },
-                        child: const Icon(Icons.bar_chart))
+                  if (iconId.isNotEmpty) divider(),
+                  if (iconId.isNotEmpty)
+                    SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: UserSession().getImage(dd.domainKey, iconId)),
+                  divider(),
+                  Text(
+                    '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
+                    style: const TextStyle(
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
-            ),
-          ],
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Tooltip(
-              message: 'Device Serial#',
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DeviceHistoryPage(
-                              deviceName: dd.deviceName ?? '-',
-                              deviceId: dd.deviceId,
-                              modelId: dd.modelId,
-                              adminMode: false,
-                            )),
-                  );
-                },
-                child: Text(
-                  dd.hardwareDeviceId,
-                  style: const TextStyle(
-                      color: Colors.blue,
-                      overflow: TextOverflow.ellipsis,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
-                ),
-              ),
-            ),
-            if (dd.hardwareDeviceId != dd.deviceName)
-              Tooltip(
-                message: 'Device Name',
-                child: Text(
-                  dd.deviceName ?? '-',
-                  style: const TextStyle(
-                      overflow: TextOverflow.ellipsis, fontSize: 16),
-                ),
-              ),
-            Tooltip(
-              message: 'Device Model',
-              child: InkWell(
-                onTap: widget.filterType == FilterType.model
+            ));
+            children.add(divider(horizontal: true, width: 24));
+          } else {
+            Parameter? parameter =
+                NoCodeUtils.getParameter(field, _models[dd.modelId]!);
+            children.add(InkWell(
+              onTap: !hasSeries
+                  ? null
+                  : () {
+                      showAnalytics(
+                          asPopup: true,
+                          fields: [field],
+                          deviceModel: deviceModel,
+                          dd: dd);
+                    },
+              onDoubleTap: !hasSeries
+                  ? null
+                  : () {
+                      showAnalytics(
+                          asPopup: false,
+                          fields: [field],
+                          deviceModel: deviceModel,
+                          dd: dd);
+                    },
+              child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                      minWidth: 80,
+                      minHeight: 160,
+                      maxWidth: 80,
+                      maxHeight: 160),
+                  child: widgets.SensorWidget(
+                    parameter: parameter!,
+                    deviceData: dd,
+                    deviceModel: deviceModel,
+                    tiny: true,
+                  )),
+            ));
+          }
+        }
+
+        rows.add(DataRow2(cells: [
+          DataCell(Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: null == dd.assetId
                     ? null
                     : () async {
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DeviceModelGridPage(
-                                    title: '${dd.modelName} - Assets',
-                                    child: DataGridSnippet(
-                                      filterType: FilterType.model,
-                                      modelId: dd.modelId,
-                                    ))));
+                        alertDialog(
+                            title: dd.asset ?? '-',
+                            body: DefaultAssetView(
+                                twinned: UserSession.twin,
+                                authToken: UserSession().getAuthToken(),
+                                assetId: dd.assetId!,
+                                onAssetDoubleTapped: (dd) async {},
+                                onAssetAnalyticsTapped:
+                                    (field, deviceModel, dd) async {
+                                  showAnalytics(
+                                      asPopup: true,
+                                      fields: [field],
+                                      deviceModel: deviceModel,
+                                      dd: dd);
+                                }));
                       },
-                child: Text(
-                  dd.modelName ?? '-',
-                  style: const TextStyle(
-                      overflow: TextOverflow.ellipsis, fontSize: 16),
+                child: Wrap(
+                  spacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      dd.asset ?? '-',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
+                          overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    if (timeSeriesFields.isNotEmpty)
+                      InkWell(
+                          onTap: () {
+                            showAnalytics(
+                                asPopup: true,
+                                fields: timeSeriesFields,
+                                deviceModel: deviceModel,
+                                dd: dd);
+                          },
+                          onDoubleTap: () {
+                            showAnalytics(
+                                asPopup: false,
+                                fields: timeSeriesFields,
+                                deviceModel: deviceModel,
+                                dd: dd);
+                          },
+                          child: const Icon(Icons.bar_chart))
+                  ],
                 ),
               ),
-            ),
-          ],
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Text(
-              timeago.format(dT, locale: 'en'),
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 16),
-            ),
-            Text(
-              dT.toString(),
-            ),
-          ],
-        )),
-        DataCell(Wrap(
-          spacing: 4.0,
-          children: [
-            Tooltip(
-              message: 'Premise',
-              child: Text(
-                dd.premise ?? '',
+            ],
+          )),
+          DataCell(Wrap(
+            spacing: 4.0,
+            children: [
+              Tooltip(
+                message: 'Device Serial#',
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DeviceHistoryPage(
+                                deviceName: dd.deviceName ?? '-',
+                                deviceId: dd.deviceId,
+                                modelId: dd.modelId,
+                                adminMode: false,
+                              )),
+                    );
+                  },
+                  child: Text(
+                    dd.hardwareDeviceId,
+                    style: const TextStyle(
+                        color: Colors.blue,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                ),
+              ),
+              if (dd.hardwareDeviceId != dd.deviceName)
+                Tooltip(
+                  message: 'Device Name',
+                  child: Text(
+                    dd.deviceName ?? '-',
+                    style: const TextStyle(
+                        overflow: TextOverflow.ellipsis, fontSize: 16),
+                  ),
+                ),
+              Tooltip(
+                message: 'Device Model',
+                child: InkWell(
+                  onTap: widget.filterType == FilterType.model
+                      ? null
+                      : () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DeviceModelGridPage(
+                                      title: '${dd.modelName} - Assets',
+                                      child: DataGridSnippet(
+                                        filterType: FilterType.model,
+                                        modelId: dd.modelId,
+                                      ))));
+                        },
+                  child: Text(
+                    dd.modelName ?? '-',
+                    style: const TextStyle(
+                        overflow: TextOverflow.ellipsis, fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          )),
+          DataCell(Wrap(
+            spacing: 4.0,
+            children: [
+              Text(
+                timeago.format(dT, locale: 'en'),
                 style: const TextStyle(
-                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.bold),
+                    fontSize: 16),
+              ),
+              Text(
+                dT.toString(),
+              ),
+            ],
+          )),
+          DataCell(Wrap(
+            spacing: 4.0,
+            children: [
+              Tooltip(
+                message: 'Premise',
+                child: Text(
+                  dd.premise ?? '',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Tooltip(
+                message: 'Facility',
+                child: Text(
+                  dd.facility ?? '',
+                  style: const TextStyle(overflow: TextOverflow.ellipsis),
+                ),
+              ),
+              Tooltip(
+                message: 'Floor',
+                child: Text(
+                  dd.floor ?? '',
+                  style: const TextStyle(overflow: TextOverflow.ellipsis),
+                ),
+              ),
+            ],
+          )),
+          if (dd.alarms.isNotEmpty ||
+              dd.displays.isNotEmpty ||
+              dd.controls!.isNotEmpty)
+            DataCell(
+              DeviceComponentView(
+                  twinned: UserSession.twin,
+                  authToken: UserSession().getAuthToken(),
+                  deviceData: dd),
+            ),
+          if (dd.alarms.isEmpty && dd.displays.isEmpty && dd.controls!.isEmpty)
+            const DataCell(
+              Text(''),
+            ),
+          DataCell(Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: children,
               ),
             ),
-            Tooltip(
-              message: 'Facility',
-              child: Text(
-                dd.facility ?? '',
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
-              ),
-            ),
-            Tooltip(
-              message: 'Floor',
-              child: Text(
-                dd.floor ?? '',
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
-              ),
-            ),
-          ],
-        )),
-        if (dd.alarms.isNotEmpty ||
-            dd.displays.isNotEmpty ||
-            dd.controls!.isNotEmpty)
-          DataCell(
-            DeviceComponentView(
-                twinned: UserSession.twin,
-                authToken: UserSession().getAuthToken(),
-                deviceData: dd),
-          ),
-        if (dd.alarms.isEmpty && dd.displays.isEmpty && dd.controls!.isEmpty)
-          const DataCell(
-            Text(''),
-          ),
-        DataCell(Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: children,
-            ),
-          ),
-        )),
-      ]));
+          )),
+        ]));
+      }
     }
 
     return DataTable2(
