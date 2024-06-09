@@ -18,6 +18,8 @@ import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nocode_commons/core/user_session.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:twinned_widgets/twinned_dashboard_widget.dart';
 
 enum CurrentView { home, map, asset, grid }
 
@@ -58,6 +60,7 @@ class _InfraPageState extends BaseState<InfraPage> {
   final Map<String, FacilityStats> _facilityStats = {};
   final Map<String, FloorStats> _floorStats = {};
   final List<DeviceData> _data = [];
+  final List<Widget> _menus = [];
 
   final GlobalKey<_InfraMapViewState> mapViewKey = GlobalKey();
   final GlobalKey<_InfraAssetViewState> assetViewKey = GlobalKey();
@@ -103,6 +106,7 @@ class _InfraPageState extends BaseState<InfraPage> {
   }
 
   Future _load() async {
+    await _loadMenus();
     if (widget.currentView == CurrentView.grid) {
       return _loadData();
     }
@@ -129,6 +133,64 @@ class _InfraPageState extends BaseState<InfraPage> {
       }
     });
     loading = false;
+  }
+
+  Future _loadMenus() async {
+    _menus.clear();
+    var res = await UserSession.twin.listDashboardMenuGroups(
+        apikey: UserSession().getAuthToken(),
+        body: const ListReq(page: 0, size: 10));
+    if (validateResponse(res)) {
+      for (DashboardMenuGroup val in res.body!.values!) {
+        List<DropdownMenuItem<DashboardMenu>> items = [];
+
+        for (DashboardMenu cval in val.menus) {
+          items.add(DropdownMenuItem<DashboardMenu>(
+            value: cval,
+            child: Text(
+              cval.displayName,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ));
+        }
+        debugPrint('Loaded ${items.length} menus items');
+
+        Widget menu = DropdownButtonHideUnderline(
+            child: DropdownButton2<DashboardMenu>(
+          customButton: Wrap(
+            spacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Icon(
+                Icons.list,
+                size: 46,
+                color: Colors.red,
+              ),
+              Text(
+                val.displayName,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          items: items,
+          onChanged: (menu) {
+            if (null == menu) return;
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TwinnedDashboardWidget(
+                          popupMode: true,
+                          screenId: menu!.screenId,
+                        )));
+          },
+        ));
+
+        _menus.add(menu);
+      }
+    }
+    debugPrint('Loaded ${_menus.length} menus');
+    refresh();
   }
 
   Future _loadPremises() async {
@@ -260,6 +322,8 @@ class _InfraPageState extends BaseState<InfraPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             const BusyIndicator(),
+            divider(horizontal: true),
+            ..._menus,
             divider(horizontal: true),
             IconButton(
                 tooltip: 'Infrastructure View',
