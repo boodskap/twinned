@@ -163,7 +163,7 @@ class _SubscriptionsPageState extends BaseState<SubscriptionsPage> {
           voice: isVoice ? value : false,
           notification: false,
           fcm: false,
-          emailId: UserSession().loginResponse!.user.email,
+          emailId: UserSession().loginResponse!.user!.email,
           phoneNumber: '0000000000',
           name: 'name',
           targetDeviceIds: [],

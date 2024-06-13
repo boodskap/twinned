@@ -73,7 +73,7 @@ class _ResetPasswordpageState extends BaseState<ResetPasswordpage> {
       } else {
         alert(
           "Password not changed",
-          res.body!.msg,
+          res.body!.msg ?? '',
         );
       }
     } catch (e, s) {
