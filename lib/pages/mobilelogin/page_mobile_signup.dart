@@ -78,7 +78,7 @@ class _SignUpMobilePageState extends BaseState<SignUpMobilePage> {
         _showOtpPage(res.body!);
       } else {
         // ignore: use_build_context_synchronously
-        alert('Error', res.body!.msg);
+        alert('Error', res.body!.msg ?? '');
       }
     } catch (e, s) {
       debugPrint('$e');

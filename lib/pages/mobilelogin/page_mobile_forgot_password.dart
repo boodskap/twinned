@@ -80,9 +80,9 @@ class _ForgotPasswordMobilePageState
             pin: "",
             pinToken: res.body!.pinToken);
         UserSession().setRegisterDets(dets);
-        _showForgotOtpPage(body.userId, res.body!.pinToken);
+        _showForgotOtpPage(body.userId ?? '', res.body!.pinToken ?? '');
       } else {
-        alert("Error", res.body!.msg);
+        alert("Error", res.body!.msg ?? '');
       }
     } catch (e, s) {
       debugPrint('$e');

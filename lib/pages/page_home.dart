@@ -361,7 +361,7 @@ class _MyHomePageState extends BaseState<MyHomePage> {
                   Navigator.pop(context);
                 },
               ),
-              if (UserSession().loginResponse!.user.email != 'try@boodskap.io')
+              if (UserSession().loginResponse!.user!.email != 'try@boodskap.io')
                 ListTile(
                   leading: const Icon(Icons.person_2_sharp),
                   title: const Text(

@@ -68,15 +68,15 @@ class _VerifyOtpPageState extends BaseState<VerifyOtpPage> {
 
       if (res.body!.ok) {
         var dets = ResetPassword(
-            userId: res.body!.user.email,
+            userId: res.body!.user!.email,
             pinToken: pinToken,
             pin: body.pin,
             password: "");
         UserSession().setRegisterDets(dets);
         _doShowResetPassword(
-            res.body!.user.email, body.pinToken, pinController.text);
+            res.body!.user!.email!, body.pinToken, pinController.text);
       } else {
-        alert('Error', res.body!.msg);
+        alert('Error', res.body!.msg ?? '');
       }
     } catch (e, s) {
       debugPrint('$e');
