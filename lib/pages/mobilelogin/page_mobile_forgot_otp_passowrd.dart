@@ -88,7 +88,7 @@ class _ForgotOtpMobilePageState extends BaseState<ForgotOtpMobilePage> {
       } else {
         alert(
           "Password not changed",
-          res.body!.msg,
+          res.body!.msg ?? '',
         );
       }
     } catch (e, s) {
