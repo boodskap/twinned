@@ -17,7 +17,7 @@ dependencies:
   twinned_widgets:
     git:
       url: https://github.com/boodskap/twinned_widgets.git
-      ref: main
+      ref: deprecated
 #    path:
 #      twinned_widgets
 
