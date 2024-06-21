@@ -8,8 +8,8 @@ import 'package:twinned/pages/page_home.dart';
 import 'package:nocode_commons/widgets/common/busy_indicator.dart';
 import 'package:twinned/widgets/commons/password_field.dart';
 import 'package:twinned/widgets/commons/userid_field.dart';
-import 'package:twinned_widgets/twinned_session.dart';
 import 'package:verification_api/api/verification.swagger.dart';
+import 'package:twin_commons/core/twinned_session.dart';
 
 final TextStyle h1 = GoogleFonts.montserrat(
   color: Colors.black,
