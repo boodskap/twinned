@@ -93,6 +93,7 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
                           fields: [field],
                           deviceModel: deviceModel,
                           deviceData: dd,
+                          canDeleteRecord: UserSession().isAdmin(),
                         )));
           },
           onDeviceDoubleTapped: (dd) {

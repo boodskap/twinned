@@ -536,6 +536,8 @@ class _GridViewPageState extends BaseState<GridViewPage>
                                         fields: [field],
                                         deviceModel: deviceModel,
                                         deviceData: dd,
+                                        canDeleteRecord:
+                                            UserSession().isAdmin(),
                                       )));
                         },
                         onDeviceDoubleTapped: (dd) async {

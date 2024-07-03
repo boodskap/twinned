@@ -344,6 +344,8 @@ class _DevicesPageState extends BaseState<DevicesPage>
                                         fields: [field],
                                         deviceModel: deviceModel,
                                         deviceData: dd,
+                                        canDeleteRecord:
+                                            UserSession().isAdmin(),
                                       )));
                         },
                       ),

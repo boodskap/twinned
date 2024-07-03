@@ -14,11 +14,13 @@ class FieldAnalyticsPage extends StatefulWidget {
   final twin.DeviceData deviceData;
   final twin.DeviceModel deviceModel;
   final bool asPopup;
+  final bool canDeleteRecord;
   const FieldAnalyticsPage({
     super.key,
     required this.fields,
     required this.deviceData,
     required this.deviceModel,
+    required this.canDeleteRecord,
     this.asPopup = false,
   });
 
@@ -87,6 +89,7 @@ class _FieldAnalyticsPageState extends BaseState<FieldAnalyticsPage> {
             child: DeviceFieldAnalytics(
               twinned: UserSession.twin,
               apiKey: UserSession().getAuthToken(),
+              canDeleteRecord: widget.canDeleteRecord,
               deviceModel: widget.deviceModel,
               deviceData: widget.deviceData,
               fields: widget.fields,

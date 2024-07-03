@@ -546,6 +546,8 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
                                         fields: [field],
                                         deviceModel: deviceModel,
                                         deviceData: dd,
+                                        canDeleteRecord:
+                                            UserSession().isAdmin(),
                                       )));
                         },
                       ),

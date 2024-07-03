@@ -181,6 +181,7 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
                               fields: [field],
                               deviceModel: deviceModel,
                               deviceData: dd,
+                              canDeleteRecord: UserSession().isAdmin(),
                             )));
               }),
         ),

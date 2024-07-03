@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -16,6 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:data_table_2/data_table_2.dart';
 import 'package:nocode_commons/twinned_widgets.dart' as widgets;
 import 'package:chopper/chopper.dart' as chopper;
+import 'package:uuid/uuid.dart';
 
 enum FilterType { none, data, field, group, model }
 
@@ -39,10 +42,20 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
   final List<DeviceData> _data = [];
   final Map<String, DeviceModel> _models = {};
   final List<String> _modelIds = [];
+  Timer? timer;
 
   @override
   void setup() {
     load();
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => load());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (null != timer) {
+      timer!.cancel();
+    }
   }
 
   void showAnalytics(
@@ -59,6 +72,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             deviceModel: deviceModel,
             deviceData: dd,
             asPopup: asPopup,
+            canDeleteRecord: UserSession().isAdmin(),
           ));
     } else {
       Navigator.push(
@@ -68,6 +82,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                     fields: fields,
                     deviceModel: deviceModel,
                     deviceData: dd,
+                    canDeleteRecord: UserSession().isAdmin(),
                   )));
     }
   }
@@ -556,6 +571,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
     }
 
     return DataTable2(
+        key: Key(const Uuid().v4()),
         dataRowHeight: 100,
         columnSpacing: 12,
         horizontalMargin: 12,

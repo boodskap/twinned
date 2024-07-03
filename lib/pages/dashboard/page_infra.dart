@@ -865,6 +865,7 @@ class _InfraAssetViewState extends BaseState<_InfraAssetView> {
                                 fields: [field],
                                 deviceModel: deviceModel,
                                 deviceData: data,
+                                canDeleteRecord: UserSession().isAdmin(),
                               )));
                 },
               ),
