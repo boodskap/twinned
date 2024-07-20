@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/widgets/commons/text_headline_secondary.dart';
 
 const Widget divider = Divider(color: Colors.transparent, thickness: 1);

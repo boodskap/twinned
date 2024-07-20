@@ -1,6 +1,6 @@
 name: twinned
 description: Boodskap Digital Twin
-version: 2.0.5
+version: 2.0.9
 publish_to: 'none'
 
 
@@ -11,19 +11,22 @@ dependencies:
   flutter:
     sdk: flutter
   
-  open_street_map_search_and_pick: ^0.1.1
-  package_info_plus: ^7.0.0
-
   twinned_widgets:
     git:
       url: https://github.com/boodskap/twinned_widgets.git
       ref: main
 #    path:
 #      twinned_widgets
-  nocode_commons:
+
+  twin_commons:
     git:
-      url: https://github.com/boodskap/nocode_commons.git
+      url: https://github.com/boodskap/twin_commons.git
       ref: main
+#    path:
+#      twin_commons
+
+  open_street_map_search_and_pick: ^0.1.1
+  package_info_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:

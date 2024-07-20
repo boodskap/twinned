@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/ui.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/ui.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/widgets/commons/datagrid_snippet.dart';
 
 class DeviceModelGridPage extends StatefulWidget {

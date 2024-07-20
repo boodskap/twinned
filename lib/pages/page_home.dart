@@ -1,8 +1,8 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/ui.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/ui.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:twinned/pages/dashboard/page_analytics.dart';
 import 'package:twinned/pages/dashboard/page_dashboad.dart';
@@ -21,7 +21,7 @@ import 'package:twinned/pages/page_subscriptions.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:twinned_widgets/twinned_dashboard_widget.dart';
 import 'package:uuid/uuid.dart';
-import 'package:nocode_commons/core/constants.dart';
+import 'package:twinned/core/constants.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

@@ -1,12 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nocode_commons/core/base_state.dart';
+import 'package:twin_commons/core/base_state.dart';
 import 'package:twinned/core/app_logo.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned/widgets/commons/userid_field.dart';
 import 'package:verification_api/api/verification.swagger.dart';
 
@@ -34,10 +33,21 @@ class _ForgotPasswordPageState extends BaseState<ForgotPasswordPage> {
   final TextEditingController _userEmail = TextEditingController();
   final GlobalKey<_ForgotPasswordPageState> _key = GlobalKey();
   final formKey = GlobalKey<FormState>();
+  bool _canSignup = false;
 
   @override
   GlobalKey<State<StatefulWidget>> getKey() {
     return _key;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _canSignup = defaultDomainKey != domainKey;
+    bool customBranding = twinSysInfo != null && defaultDomainKey != domainKey;
+    if (customBranding) {
+      _canSignup = twinSysInfo?.enableSelfRegistration ?? false;
+    }
   }
 
   @override
@@ -170,33 +180,34 @@ class _ForgotPasswordPageState extends BaseState<ForgotPasswordPage> {
               const SizedBox(
                 height: 60,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Don't you have an account ? ",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      widget.pageController.animateToPage(3,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut);
-                    },
-                    child: const Text(
-                      "SIGN UP!",
+              if (_canSignup)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Don't you have an account ? ",
                       style: TextStyle(
-                          fontSize: 16,
-                          color: loginBgColor,
-                          decoration: TextDecoration.none),
+                        fontSize: 15,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    TextButton(
+                      onPressed: () {
+                        widget.pageController.animateToPage(3,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut);
+                      },
+                      child: const Text(
+                        "SIGN UP!",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: loginBgColor,
+                            decoration: TextDecoration.none),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
           Center(

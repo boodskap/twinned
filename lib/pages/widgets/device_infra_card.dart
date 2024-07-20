@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/custom/widgets/fillable_circle.dart';
-import 'package:nocode_commons/custom/widgets/fillable_rectangle.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/widgets/fillable_circle.dart';
+import 'package:twin_commons/widgets/fillable_rectangle.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:nocode_commons/widgets/device_fields.dart';
+import 'package:twin_commons/widgets/device_fields.dart';
 
 import '../dashboard/page_device_history.dart';
 
