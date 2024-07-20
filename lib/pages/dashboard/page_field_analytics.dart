@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/analytics/field_analytics.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/ui.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/util/nocode_utils.dart';
-import 'package:nocode_commons/widgets/common/layout.dart';
+import 'package:twin_commons/analytics/field_analytics.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/ui.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/util/nocode_utils.dart';
+import 'package:twin_commons/widgets/layout.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 
 class FieldAnalyticsPage extends StatefulWidget {
@@ -50,7 +50,7 @@ class _FieldAnalyticsPageState extends BaseState<FieldAnalyticsPage> {
       title = '${widget.deviceData.asset} - Time Series';
     } else {
       title =
-          '${widget.deviceData.asset} - ${NoCodeUtils.getParameterLabel(widget.fields[0], widget.deviceModel)} (${NoCodeUtils.getParameterUnit(widget.fields[0], widget.deviceModel)}) - Time Series';
+          '${widget.deviceData.asset} - ${TwinUtils.getParameterLabel(widget.fields[0], widget.deviceModel)} (${TwinUtils.getParameterUnit(widget.fields[0], widget.deviceModel)}) - Time Series';
     }
     return Scaffold(
       appBar: AppBar(

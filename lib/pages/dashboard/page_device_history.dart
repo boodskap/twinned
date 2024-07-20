@@ -4,18 +4,16 @@ import 'package:colored_json/colored_json.dart';
 import 'package:eventify/eventify.dart' as event;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/ui.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
-import 'package:nocode_commons/widgets/default_deviceview.dart';
-import 'package:nocode_commons/widgets/device_view.dart';
-import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/ui.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
+import 'package:twin_commons/widgets/default_deviceview.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:nocode_commons/util/nocode_utils.dart';
+import 'package:twin_commons/util/nocode_utils.dart';
 
 class DeviceHistoryPage extends StatefulWidget {
   final String deviceName;
@@ -194,13 +192,13 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
             apikey: UserSession().getAuthToken(), modelId: widget.modelId);
         if (validateResponse(mRes)) {
           deviceModel = mRes.body!.entity;
-          var fields = NoCodeUtils.getSortedFields(deviceModel!);
+          var fields = TwinUtils.getSortedFields(deviceModel!);
           for (var p in fields) {
             dataColumns.add(p);
             columns.add(
               Expanded(
                 child: Text(
-                  NoCodeUtils.getParameterLabel(p, deviceModel!),
+                  TwinUtils.getParameterLabel(p, deviceModel!),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
@@ -505,7 +503,7 @@ class _DeviceHistoryPageState extends BaseState<DeviceHistoryPage>
             child: Row(
               children: [
                 Text(
-                  '${dynValue.toString()} ${NoCodeUtils.getParameterUnit(dataColumns[i], deviceModel!)}',
+                  '${dynValue.toString()} ${TwinUtils.getParameterUnit(dataColumns[i], deviceModel!)}',
                   style: const TextStyle(overflow: TextOverflow.ellipsis),
                 ),
               ],

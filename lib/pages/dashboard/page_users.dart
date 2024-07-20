@@ -1,8 +1,8 @@
 import 'package:eventify/eventify.dart' as event;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/pages/widgets/role_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twinned;
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -17,7 +17,6 @@ final TextStyle _errorPopupTextStyle = GoogleFonts.acme(
     color: Colors.red, fontSize: 14, fontWeight: FontWeight.bold);
 const Color primaryColor = Color(0xFF0C244A);
 const Color secondaryColor = Color(0xFFFFFFFF);
-
 
 const hdivider = SizedBox(
   width: 8,
@@ -88,9 +87,8 @@ class _TwinnedUserPageState extends BaseState<TwinnedUserPage> {
     String lastName = nameParts.length > 1 ? nameParts[1] : '';
     rolesSelected = param.roles;
     setState(() {});
-   
+
     TableRow row = TableRow(children: [
-      
       Align(alignment: Alignment.center, child: Text(firstName)),
       Align(
         alignment: Alignment.center,
@@ -101,7 +99,6 @@ class _TwinnedUserPageState extends BaseState<TwinnedUserPage> {
         alignment: Alignment.center,
         child: Text(param.phone),
       ),
-    
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -204,8 +201,8 @@ class _TwinnedUserPageState extends BaseState<TwinnedUserPage> {
   void _addNewUser(twinned.TwinUserInfo userinfo) async {
     busy();
     try {
-      var res = await UserSession.twin.createTwinUser(
-          apikey: UserSession().getAuthToken(), body: userinfo);
+      var res = await UserSession.twin
+          .createTwinUser(apikey: UserSession().getAuthToken(), body: userinfo);
 
       if (validateResponse(res)) {
         twinned.TwinUser entity = res.body!.entity!;
@@ -410,8 +407,7 @@ class _TwinnedUserPageState extends BaseState<TwinnedUserPage> {
                                     name: "$firstName $lastName",
                                     email: email,
                                     phone: phoneNumber,
-                                    roles:
-                                        user != null ? user.roles : []);
+                                    roles: user != null ? user.roles : []);
 
                             if (user != null) {
                               _updateUser(
@@ -509,13 +505,13 @@ class _TwinnedUserPageState extends BaseState<TwinnedUserPage> {
 
   void _removeEntity(String id) async {
     try {
-      var res = await UserSession.twin.deleteTwinUser(
-          apikey: UserSession().getAuthToken(), twinUserId: id);
+      var res = await UserSession.twin
+          .deleteTwinUser(apikey: UserSession().getAuthToken(), twinUserId: id);
       if (validateResponse(res)) {
         Future.delayed(const Duration(seconds: 1), () {
           _loadEntities();
         });
-      } 
+      }
     } catch (e, s) {
       debugPrint('e');
       debugPrint('$s');
@@ -624,6 +620,3 @@ class TableHeader extends StatelessWidget {
     );
   }
 }
-
-
-

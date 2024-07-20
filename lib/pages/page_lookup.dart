@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:nocode_commons/core/base_state.dart';
+import 'package:twin_commons/core/base_state.dart';
 import 'package:accordion/accordion.dart';
 import 'package:accordion/controllers.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:twinned/model/twin_model.dart';
+import 'package:twinned/core/user_session.dart';
 
 class TwinnedLookupPage extends StatefulWidget {
   const TwinnedLookupPage({super.key});

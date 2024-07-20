@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned/pages/dashboard/page_myassets.dart';
 import 'package:twinned/pages/widgets/group_assets.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
@@ -240,8 +240,12 @@ class _MyDevicesPageState extends BaseState<MyDevicesPage> {
                           Align(
                               alignment: Alignment.center,
                               child: Tooltip(
-                                message: group.name,
-                                child: Text(group.name,style: const TextStyle(overflow: TextOverflow.ellipsis),))),
+                                  message: group.name,
+                                  child: Text(
+                                    group.name,
+                                    style: const TextStyle(
+                                        overflow: TextOverflow.ellipsis),
+                                  ))),
                           divider(),
                           Text(
                             '${group.assetIds.length} assets',

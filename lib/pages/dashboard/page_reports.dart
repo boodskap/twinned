@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/util/nocode_utils.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/util/nocode_utils.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 
 import '../widgets/topbar.dart';
@@ -91,7 +91,7 @@ class _MyReportPageState extends BaseState<MyReportPage> {
   Widget _buildStatus(BuildContext context) {
     final List<DataColumn> columns = [];
     final List<DataRow> rows = [];
-    final List<String> fields = NoCodeUtils.getSortedFields(model!);
+    final List<String> fields = TwinUtils.getSortedFields(model!);
 
     fields.removeWhere((field) => !widget.report.fields.contains(field));
 
@@ -124,9 +124,9 @@ class _MyReportPageState extends BaseState<MyReportPage> {
     )));
 
     for (String field in fields) {
-      String label = NoCodeUtils.getParameterLabel(field, model!);
-      String unit = NoCodeUtils.getParameterUnit(field, model!);
-      String? icon = NoCodeUtils.getParameterIcon(field, model!);
+      String label = TwinUtils.getParameterLabel(field, model!);
+      String unit = TwinUtils.getParameterUnit(field, model!);
+      String? icon = TwinUtils.getParameterIcon(field, model!);
       Widget? image;
 
       if (icon.isNotEmpty) {

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../widgets/commons/left_side_image_page_list_item.dart';
-import '../widgets/commons/paragraph.dart';
-import '../widgets/digitaltwin_menu_bar.dart';
-import 'package:nocode_commons/core/constants.dart';
+import 'package:twinned/widgets/commons/left_side_image_page_list_item.dart';
+import 'package:twinned/widgets/commons/paragraph.dart';
+import 'package:twinned/widgets/digitaltwin_menu_bar.dart';
+import 'package:twinned/core/constants.dart';
 import 'package:twinned/widgets/commons/widgets.dart';
 import 'package:twinned/widgets/footer.dart';
-
 
 class AboutPage extends StatelessWidget {
   static const String name = 'about';
@@ -80,8 +79,6 @@ final List<String> aboutsubText2 = [
   'Your success is our priority. We work closely with you to understand your goals and tailor our digital twinning technology to meet your specific needs.',
 ];
 
-
-
 class AboutContentSection extends StatelessWidget {
   const AboutContentSection({super.key});
 
@@ -143,12 +140,10 @@ class AboutContentSection extends StatelessWidget {
                 color: Colors.white,
                 fontStyle: FontStyle.italic)),
         const SizedBox(height: 5),
-         const TextCustomize(
-            text: "Connect with us to schedule a personalized consultation and discover how our technology can propel your business to new heights.",
-            textstyle: TextStyle(
-                fontSize: 13,
-                color: Colors.white)),
-       
+        const TextCustomize(
+            text:
+                "Connect with us to schedule a personalized consultation and discover how our technology can propel your business to new heights.",
+            textstyle: TextStyle(fontSize: 13, color: Colors.white)),
       ],
     );
   }
@@ -173,8 +168,8 @@ class UnorderedListWidget extends StatelessWidget {
             leading: const Icon(Icons.circle, size: 10, color: Colors.white),
             title: RichText(
               text: TextSpan(
-                style:
-                    const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 13, height: 1.4),
                 children: [
                   TextSpan(
                     text: highlightedDynamicText[index],

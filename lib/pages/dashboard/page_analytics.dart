@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
-import 'package:nocode_commons/widgets/common/layout.dart';
-import 'package:nocode_commons/widgets/common/trends_layout.dart';
+import 'package:twin_commons/widgets/layout.dart';
+import 'package:twin_commons/widgets/trends_layout.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});

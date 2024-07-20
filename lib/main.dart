@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:provider/provider.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:nocode_commons/core/constants.dart';
+import 'package:twinned/core/constants.dart';
 import 'package:twinned/pages/widgets/page_landing.dart';
-import 'package:twinned/providers/state_provider.dart';
 import 'package:twinned/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uuid/uuid.dart';
