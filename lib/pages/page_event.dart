@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
-import 'package:nocode_commons/core/base_state.dart';
+import 'package:twin_commons/core/base_state.dart';
 import 'package:intl/intl.dart';
 
 class EventPage extends StatefulWidget {
@@ -450,7 +450,8 @@ class CustomPagination extends StatelessWidget {
   final List<int> rowsPerPageOptions;
   final int selectedRowsPerPage;
 
-  const CustomPagination({super.key, 
+  const CustomPagination({
+    super.key,
     required this.total,
     required this.rowsPerPage,
     required this.currentPage,

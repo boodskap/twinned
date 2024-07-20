@@ -1,27 +1,29 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/util/nocode_utils.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
-import 'package:nocode_commons/widgets/default_assetview.dart';
-import 'package:nocode_commons/widgets/device_component.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
+import 'package:twin_commons/widgets/default_assetview.dart';
+import 'package:twin_commons/widgets/device_component.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/dashboard/page_modelgrid.dart';
-import 'package:twinned_api/api/twinned.swagger.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned_api/api/twinned.swagger.dart' as twin;
+import 'package:twinned/core/user_session.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:data_table_2/data_table_2.dart';
-import 'package:nocode_commons/twinned_widgets.dart' as widgets;
+import 'package:twin_commons/twin_commons.dart';
 import 'package:chopper/chopper.dart' as chopper;
+import 'package:uuid/uuid.dart';
 
 enum FilterType { none, data, field, group, model }
 
 class DataGridSnippet extends StatefulWidget {
   final FilterType filterType;
-  final AssetGroup? group;
+  final twin.AssetGroup? group;
   final String? filterId;
   final String? modelId;
   const DataGridSnippet(
@@ -36,20 +38,30 @@ class DataGridSnippet extends StatefulWidget {
 }
 
 class DataGridSnippetState extends BaseState<DataGridSnippet> {
-  final List<DeviceData> _data = [];
-  final Map<String, DeviceModel> _models = {};
+  final List<twin.DeviceData> _data = [];
+  final Map<String, twin.DeviceModel> _models = {};
   final List<String> _modelIds = [];
+  Timer? timer;
 
   @override
   void setup() {
     load();
+    timer = Timer.periodic(const Duration(seconds: 45), (Timer t) => load());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (null != timer) {
+      timer!.cancel();
+    }
   }
 
   void showAnalytics(
       {required bool asPopup,
       required List<String> fields,
-      required DeviceModel deviceModel,
-      required DeviceData dd}) {
+      required twin.DeviceModel deviceModel,
+      required twin.DeviceData dd}) {
     if (asPopup) {
       alertDialog(
           title: '',
@@ -59,6 +71,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             deviceModel: deviceModel,
             deviceData: dd,
             asPopup: asPopup,
+            canDeleteRecord: UserSession().isAdmin(),
           ));
     } else {
       Navigator.push(
@@ -68,6 +81,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                     fields: fields,
                     deviceModel: deviceModel,
                     deviceData: dd,
+                    canDeleteRecord: UserSession().isAdmin(),
                   )));
     }
   }
@@ -85,7 +99,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
       _models.clear();
       _modelIds.clear();
 
-      late final chopper.Response<DeviceDataArrayRes> dRes;
+      late final chopper.Response<twin.DeviceDataArrayRes> dRes;
 
       switch (widget.filterType) {
         case FilterType.none:
@@ -93,7 +107,8 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           dRes = await UserSession.twin.searchRecentDeviceData(
               apikey: UserSession().getAuthToken(),
               modelId: widget.modelId,
-              body: FilterSearchReq(search: search, page: page, size: size));
+              body:
+                  twin.FilterSearchReq(search: search, page: page, size: size));
           break;
         case FilterType.data:
           dRes = await UserSession.twin.filterRecentDeviceData(
@@ -118,14 +133,14 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         if (validateResponse(dRes)) {
           _data.addAll(dRes.body!.values!);
 
-          for (DeviceData dd in _data) {
+          for (twin.DeviceData dd in _data) {
             if (_modelIds.contains(dd.modelId)) continue;
             _modelIds.add(dd.modelId);
           }
 
           var mRes = await UserSession.twin.getDeviceModels(
               apikey: UserSession().getAuthToken(),
-              body: GetReq(ids: _modelIds));
+              body: twin.GetReq(ids: _modelIds));
 
           if (validateResponse(mRes)) {
             for (var deviceModel in mRes.body!.values!) {
@@ -138,12 +153,13 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
           var sRes = await UserSession.twin.searchRecentDeviceData(
               apikey: UserSession().getAuthToken(),
               assetId: assetId,
-              body: FilterSearchReq(search: search, page: page, size: size));
+              body:
+                  twin.FilterSearchReq(search: search, page: page, size: size));
 
           if (validateResponse(sRes)) {
             _data.addAll(sRes.body!.values!);
 
-            for (DeviceData dd in _data) {
+            for (twin.DeviceData dd in _data) {
               if (_modelIds.contains(dd.modelId)) continue;
               _modelIds.add(dd.modelId);
             }
@@ -151,7 +167,8 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         }
 
         var mRes = await UserSession.twin.getDeviceModels(
-            apikey: UserSession().getAuthToken(), body: GetReq(ids: _modelIds));
+            apikey: UserSession().getAuthToken(),
+            body: twin.GetReq(ids: _modelIds));
 
         if (validateResponse(mRes)) {
           for (var deviceModel in mRes.body!.values!) {
@@ -269,17 +286,17 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
         var dT = DateTime.fromMillisecondsSinceEpoch(dd.updatedStamp);
         List<Widget> children = [];
         Map<String, dynamic> dynData = dd.data as Map<String, dynamic>;
-        DeviceModel deviceModel = _models[dd.modelId]!;
-        List<String> fields = NoCodeUtils.getSortedFields(deviceModel);
+        twin.DeviceModel deviceModel = _models[dd.modelId]!;
+        List<String> fields = TwinUtils.getSortedFields(deviceModel);
         List<String> timeSeriesFields =
-            NoCodeUtils.getTimeSeriesFields(deviceModel);
+            TwinUtils.getTimeSeriesFields(deviceModel);
 
         for (String field in fields) {
-          widgets.SensorWidgetType type =
-              NoCodeUtils.getSensorWidgetType(field, _models[dd.modelId]!);
+          SensorWidgetType type =
+              TwinUtils.getSensorWidgetType(field, _models[dd.modelId]!);
           bool hasSeries = timeSeriesFields.contains(field);
-          if (type == widgets.SensorWidgetType.none) {
-            String iconId = NoCodeUtils.getParameterIcon(field, deviceModel);
+          if (type == SensorWidgetType.none) {
+            String iconId = TwinUtils.getParameterIcon(field, deviceModel);
             _padding(children);
             children.add(InkWell(
               onTap: !hasSeries
@@ -303,7 +320,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
               child: Column(
                 children: [
                   Text(
-                    NoCodeUtils.getParameterLabel(field, deviceModel),
+                    TwinUtils.getParameterLabel(field, deviceModel),
                     style: const TextStyle(
                         fontSize: 14,
                         overflow: TextOverflow.ellipsis,
@@ -317,7 +334,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                         child: UserSession().getImage(dd.domainKey, iconId)),
                   divider(),
                   Text(
-                    '${dynData[field] ?? '-'} ${NoCodeUtils.getParameterUnit(field, deviceModel)}',
+                    '${dynData[field] ?? '-'} ${TwinUtils.getParameterUnit(field, deviceModel)}',
                     style: const TextStyle(
                         fontSize: 14,
                         overflow: TextOverflow.ellipsis,
@@ -328,8 +345,8 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
             ));
             children.add(divider(horizontal: true, width: 24));
           } else {
-            Parameter? parameter =
-                NoCodeUtils.getParameter(field, _models[dd.modelId]!);
+            twin.Parameter? parameter =
+                TwinUtils.getParameter(field, _models[dd.modelId]!);
             children.add(InkWell(
               onTap: !hasSeries
                   ? null
@@ -355,7 +372,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
                       minHeight: 160,
                       maxWidth: 80,
                       maxHeight: 160),
-                  child: widgets.SensorWidget(
+                  child: SensorWidget(
                     parameter: parameter!,
                     deviceData: dd,
                     deviceModel: deviceModel,
@@ -556,6 +573,7 @@ class DataGridSnippetState extends BaseState<DataGridSnippet> {
     }
 
     return DataTable2(
+        key: Key(const Uuid().v4()),
         dataRowHeight: 100,
         columnSpacing: 12,
         horizontalMargin: 12,

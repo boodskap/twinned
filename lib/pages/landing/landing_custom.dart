@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twinned;
 import 'package:google_fonts/google_fonts.dart';
 

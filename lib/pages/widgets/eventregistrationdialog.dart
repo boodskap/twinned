@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/pages/widgets/events_dropdown.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 
@@ -172,7 +172,8 @@ class _EventRegistrationDialogState extends State<EventRegistrationDialog> {
                 if (_smsCheckbox || _voiceCheckbox)
                   TextFormField(
                     controller: _phoneNumberController,
-                    decoration: const InputDecoration(labelText: 'Phone Number'),
+                    decoration:
+                        const InputDecoration(labelText: 'Phone Number'),
                     validator: _validatePhoneNumber,
                   ),
                 CheckboxListTile(

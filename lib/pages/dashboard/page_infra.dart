@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
-import 'package:nocode_commons/widgets/default_assetview.dart';
-import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
+import 'package:twin_commons/widgets/default_assetview.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/widgets/asset_infra_card.dart';
 import 'package:twinned/pages/widgets/device_infra_card.dart';
@@ -17,7 +16,7 @@ import 'package:twinned/widgets/commons/datagrid_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:twinned_widgets/twinned_dashboard_widget.dart';
 
@@ -865,6 +864,7 @@ class _InfraAssetViewState extends BaseState<_InfraAssetView> {
                                 fields: [field],
                                 deviceModel: deviceModel,
                                 deviceData: data,
+                                canDeleteRecord: UserSession().isAdmin(),
                               )));
                 },
               ),

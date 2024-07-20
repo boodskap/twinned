@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/widgets/commons/label_textfield.dart';
 
 class TwinnedProfilePage extends StatefulWidget {

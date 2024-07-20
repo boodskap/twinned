@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../widgets/commons/left_side_image_page_list_item.dart';
-import '../widgets/commons/paragraph.dart';
-import '../widgets/digitaltwin_menu_bar.dart';
-
-import 'package:nocode_commons/core/constants.dart';
+import 'package:twinned/widgets/commons/left_side_image_page_list_item.dart';
+import 'package:twinned/widgets/commons/paragraph.dart';
+import 'package:twinned/widgets/digitaltwin_menu_bar.dart';
+import 'package:twinned/core/constants.dart';
 import 'package:twinned/widgets/commons/widgets.dart';
 import 'package:twinned/widgets/footer.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +21,6 @@ class ContactPage extends StatelessWidget {
   static const String buildDescription = "Our Office Location";
   static const List<Paragraph> buildParagraphs = [
     Paragraph(text: 'United States'),
-
     Paragraph(text: 'Boodskap Inc.,'),
     Paragraph(text: '8951 Cypress Waters Blvd, suite 160'),
     Paragraph(text: 'Dallas, TX 75019'),
@@ -71,7 +68,7 @@ class ContactPage extends StatelessWidget {
 class ContactForm extends StatefulWidget {
   final Color textColor;
 
-  const ContactForm({super.key,  this.textColor= Colors.white});
+  const ContactForm({super.key, this.textColor = Colors.white});
   @override
   _ContactFormState createState() => _ContactFormState();
 }
@@ -97,7 +94,7 @@ class _ContactFormState extends State<ContactForm> {
           children: [
             _buildLabel('Full Name'),
             TextFormField(
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
                 ),
@@ -105,7 +102,7 @@ class _ContactFormState extends State<ContactForm> {
                   borderSide: BorderSide(color: widget.textColor),
                 ),
               ),
-              style:  TextStyle(color: widget.textColor),
+              style: TextStyle(color: widget.textColor),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your full name';
@@ -119,7 +116,7 @@ class _ContactFormState extends State<ContactForm> {
             const SizedBox(height: 5),
             _buildLabel('Company Name'),
             TextFormField(
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
                 ),
@@ -127,7 +124,7 @@ class _ContactFormState extends State<ContactForm> {
                   borderSide: BorderSide(color: widget.textColor),
                 ),
               ),
-               validator: (value) {
+              validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your company name';
                 }
@@ -141,7 +138,7 @@ class _ContactFormState extends State<ContactForm> {
             const SizedBox(height: 5),
             _buildLabel('Email ID'),
             TextFormField(
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
                 ),
@@ -149,7 +146,7 @@ class _ContactFormState extends State<ContactForm> {
                   borderSide: BorderSide(color: widget.textColor),
                 ),
               ),
-              style:  TextStyle(color: widget.textColor),
+              style: TextStyle(color: widget.textColor),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
@@ -170,10 +167,9 @@ class _ContactFormState extends State<ContactForm> {
               maxLength: 10,
               keyboardType: TextInputType.phone,
               inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                    RegExp(r'[0-9]')), 
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
               ],
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 counterText: "",
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
@@ -196,7 +192,7 @@ class _ContactFormState extends State<ContactForm> {
             const SizedBox(height: 5),
             _buildLabel('Subject'),
             TextFormField(
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
                 ),
@@ -204,13 +200,13 @@ class _ContactFormState extends State<ContactForm> {
                   borderSide: BorderSide(color: widget.textColor),
                 ),
               ),
-               validator: (value) {
+              validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your subject';
                 }
                 return null;
               },
-              style:  TextStyle(color: widget.textColor),
+              style: TextStyle(color: widget.textColor),
               onSaved: (value) {
                 subject = value!;
               },
@@ -218,7 +214,7 @@ class _ContactFormState extends State<ContactForm> {
             const SizedBox(height: 5),
             _buildLabel('Message'),
             TextFormField(
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: widget.textColor),
                 ),
@@ -226,7 +222,7 @@ class _ContactFormState extends State<ContactForm> {
                   borderSide: BorderSide(color: widget.textColor),
                 ),
               ),
-              style:  TextStyle(color: widget.textColor),
+              style: TextStyle(color: widget.textColor),
               maxLines: 5,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -266,7 +262,7 @@ class _ContactFormState extends State<ContactForm> {
   Widget _buildLabel(String label) {
     return Text(
       label,
-      style:  TextStyle(
+      style: TextStyle(
           fontSize: 16, fontWeight: FontWeight.bold, color: widget.textColor),
     );
   }

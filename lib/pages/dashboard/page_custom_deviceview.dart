@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twin_commons/core/twin_image_helper.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 
 class myDeviceView extends StatefulWidget {
@@ -327,12 +328,8 @@ class _FinalDevViewState extends BaseState<FinalDevView> {
     return Tooltip(
         message: obj['name'],
         child: obj.containsKey('domainkey')
-            ? Image.network(
-                twinImageUrl(widget.twinned.client.baseUrl.toString(),
-                    obj['domainkey'], obj['img']),
-                height: h,
-                width: w,
-              )
+            ? TwinImageHelper.getImage(obj['domainkey'], obj['img'],
+                height: h, width: w)
             : Image.asset(
                 obj['img'],
                 height: h,
@@ -399,16 +396,11 @@ class _FinalDevViewState extends BaseState<FinalDevView> {
                           child: Stack(alignment: Alignment.center, children: [
                             Center(
                               child: deviceModel['img'] != 'EMPTY'
-                                  ? Image.network(
-                                      twinImageUrl(
-                                        widget.twinned.client.baseUrl
-                                            .toString(),
-                                        deviceModel['domainkey'],
-                                        deviceModel['img'],
-                                      ),
+                                  ? TwinImageHelper.getImage(
+                                      deviceModel['domainkey'],
+                                      deviceModel['img'],
                                       height: _height - 150,
-                                      width: _width - 150,
-                                    )
+                                      width: _width - 150)
                                   : const Text('Device Image Not Found!'),
                             ),
                             if (centerStorage.isNotEmpty)

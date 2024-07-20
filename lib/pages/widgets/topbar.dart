@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/ui.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/ui.dart';
+import 'package:twinned/core/user_session.dart';
 
 class TopBar extends StatelessWidget {
   final String title;

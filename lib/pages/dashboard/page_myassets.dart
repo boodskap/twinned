@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
-import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned/pages/widgets/topbar.dart';
 import 'package:twinned/widgets/commons/datagrid_snippet.dart';
 import 'package:twinned_api/api/twinned.swagger.dart';
-import 'package:nocode_commons/widgets/default_assetview.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:accordion/accordion.dart';
-import 'package:data_table_2/data_table_2.dart';
-import 'package:accordion/controllers.dart';
+import 'package:twin_commons/widgets/default_assetview.dart';
 import 'package:uuid/uuid.dart';
 
 typedef BasicInfoCallback = void Function(
@@ -181,6 +176,7 @@ class _MyAssetsPageState extends BaseState<MyAssetsPage> {
                               fields: [field],
                               deviceModel: deviceModel,
                               deviceData: dd,
+                              canDeleteRecord: UserSession().isAdmin(),
                             )));
               }),
         ),

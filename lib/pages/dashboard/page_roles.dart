@@ -1,11 +1,8 @@
-
-
-
 import 'package:eventify/eventify.dart' as event;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twinned;
 
 final TextStyle _titleStyle = GoogleFonts.acme(
@@ -132,8 +129,8 @@ class _TwinnedRolePageState extends BaseState<TwinnedRolePage> {
         description: roleDescription,
       );
 
-      var res = await UserSession.twin.createRole(
-          apikey: UserSession().getAuthToken(), body: info);
+      var res = await UserSession.twin
+          .createRole(apikey: UserSession().getAuthToken(), body: info);
 
       if (validateResponse(res)) {
         twinned.Role entity = res.body!.entity!;
@@ -408,8 +405,8 @@ class _TwinnedRolePageState extends BaseState<TwinnedRolePage> {
     busy();
     try {
       int index = _entities.indexWhere((element) => element.id == id);
-      var res = await UserSession.twin.deleteRole(
-          apikey: UserSession().getAuthToken(), roleId: id);
+      var res = await UserSession.twin
+          .deleteRole(apikey: UserSession().getAuthToken(), roleId: id);
 
       if (validateResponse(res)) {
         _entities.removeAt(index);

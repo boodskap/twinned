@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/constants.dart';
+import 'package:twinned/core/constants.dart';
 import 'package:twinned/widgets/commons/image_wrapper.dart';
 import 'package:twinned/widgets/commons/paragraph.dart';
 

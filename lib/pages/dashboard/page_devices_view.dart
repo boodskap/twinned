@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:nocode_commons/core/base_state.dart';
-import 'package:nocode_commons/widgets/default_deviceview.dart';
-import 'package:nocode_commons/core/user_session.dart';
-import 'package:twinned/pages/dashboard/page_device_analytics.dart';
+import 'package:twin_commons/core/base_state.dart';
+import 'package:twin_commons/widgets/default_deviceview.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/pages/dashboard/page_device_history.dart';
-import 'package:nocode_commons/widgets/common/busy_indicator.dart';
+import 'package:twin_commons/core/busy_indicator.dart';
 import 'package:twinned/pages/dashboard/page_field_analytics.dart';
 import 'package:twinned_api/api/twinned.swagger.dart' as twin;
 
@@ -93,6 +91,7 @@ class _DevicesViewPageState extends BaseState<DevicesViewPage> {
                           fields: [field],
                           deviceModel: deviceModel,
                           deviceData: dd,
+                          canDeleteRecord: UserSession().isAdmin(),
                         )));
           },
           onDeviceDoubleTapped: (dd) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nocode_commons/core/constants.dart';
-import 'package:nocode_commons/core/user_session.dart';
+import 'package:twinned/core/constants.dart';
+import 'package:twinned/core/user_session.dart';
 import 'package:twinned/pages/landing/landing_build.dart';
 import 'package:twinned/pages/landing/landing_connect.dart';
 import 'package:twinned/pages/landing/landing_custom.dart';
