@@ -18,15 +18,17 @@ dependencies:
 #    path:
 #      twinned_widgets
 
-  twin_commons:
-    git:
-      url: https://github.com/boodskap/twin_commons.git
-      ref: main
-#    path:
-#      twin_commons
-
   open_street_map_search_and_pick: ^0.1.1
   package_info_plus: ^7.0.0
+  responsive_framework: ^1.1.1
+  synchronized: ^3.1.0+1
+  flutter_dotenv: ^5.1.0
+  colored_json: ^1.1.2
+  dropdown_button2: ^2.3.9
+  provider: ^6.1.1
+  intl_phone_field: ^3.2.0
+  pinput: ^4.0.0
+  convex_bottom_bar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
